@@ -1,0 +1,2900 @@
+<!DOCTYPE html>
+<!-- v1779429717 -->
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Novoa Shoes — Consulta de Rutas</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet">
+<style>
+/* ── MODO OSCURO (default) ── */
+:root {
+  --bg: #0d0f14;
+  --bg2: #141720;
+  --bg3: #1c2030;
+  --bg4: #242840;
+  --surface: #1e2235;
+  --border: #2a2f4a;
+  --border2: #353b5e;
+  --accent: #4f7dff;
+  --accent2: #7b5ea7;
+  --green: #2dd4a0;
+  --amber: #f5a623;
+  --red: #f05252;
+  --blue-light: #93b4ff;
+  --text: #e8eaf6;
+  --text2: #a0a8c8;
+  --text3: #606880;
+  --radius: 12px;
+  --radius-sm: 8px;
+  --shadow: 0 4px 24px rgba(0,0,0,0.4);
+}
+
+body.light {
+  --bg: #f0f2f8;
+  --bg2: #ffffff;
+  --bg3: #f5f6fa;
+  --bg4: #eaecf5;
+  --surface: #ffffff;
+  --border: #d8dce8;
+  --border2: #c4c9de;
+  --accent: #3a66f0;
+  --accent2: #6b4aab;
+  --green: #0fa876;
+  --amber: #d4840e;
+  --red: #d93f3f;
+  --blue-light: #3a66f0;
+  --text: #1a1c2e;
+  --text2: #4a5070;
+  --text3: #8890b0;
+  --shadow: 0 2px 16px rgba(0,0,0,0.12);
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: 'DM Sans', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ─── TOPBAR ─── */
+.global-topbar {
+  height: 64px;
+  background: var(--bg2);
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  padding: 0 20px;
+  gap: 10px;
+  flex-shrink: 0;
+  z-index: 60;
+}
+
+.menu-btn {
+  display: none;
+  background: none;
+  border: none;
+  color: var(--text);
+  cursor: pointer;
+  padding: 4px;
+}
+
+.topbar-brand .logo-mark {
+  font-family: 'Syne', sans-serif;
+  font-weight: 800;
+  font-size: 22px;
+  letter-spacing: -0.5px;
+  color: var(--text);
+  line-height: 1;
+}
+.topbar-brand .logo-mark span { color: var(--accent); }
+.topbar-brand .logo-sub {
+  font-size: 10px;
+  color: var(--text3);
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  margin-top: 4px;
+  line-height: 1;
+}
+
+.topbar-date { font-size: 12px; color: var(--text3); white-space: nowrap; }
+
+/* ─── MAIN WRAPPER ─── */
+.main-wrapper {
+  display: flex;
+  flex: 1;
+  min-height: 0;
+  position: relative;
+}
+
+/* ─── SIDEBAR ─── */
+#sidebar {
+  width: 240px;
+  min-width: 240px;
+  background: var(--bg2);
+  border-right: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+  z-index: 50;
+  transition: transform 0.3s ease;
+}
+
+.mobile-close-container {
+  display: none;
+  text-align: right;
+  padding: 16px 16px 0;
+}
+.close-sidebar-btn {
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  color: var(--text);
+  cursor: pointer;
+  border-radius: 8px;
+  width: 36px; height: 36px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.nav-section {
+  padding: 16px 12px 8px;
+  flex: 1;
+  overflow-y: auto;
+}
+.nav-label {
+  font-size: 10px;
+  letter-spacing: 1.8px;
+  text-transform: uppercase;
+  color: var(--text3);
+  padding: 0 12px;
+  margin-bottom: 6px;
+  margin-top: 16px;
+}
+.nav-label:first-child { margin-top: 0; }
+
+.nav-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 14px;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: all 0.15s;
+  font-size: 14px;
+  font-weight: 400;
+  color: var(--text2);
+  border: none;
+  background: none;
+  width: 100%;
+  text-align: left;
+  margin-bottom: 2px;
+}
+.nav-item:hover { background: var(--bg3); color: var(--text); }
+.nav-item.active {
+  background: linear-gradient(135deg, rgba(79,125,255,0.18), rgba(123,94,167,0.12));
+  color: var(--blue-light);
+  border: 1px solid rgba(79,125,255,0.25);
+}
+.nav-item svg { flex-shrink: 0; opacity: 0.7; }
+.nav-item.active svg { opacity: 1; }
+
+.nav-badge {
+  margin-left: auto;
+  background: var(--accent);
+  color: #fff;
+  font-size: 10px;
+  font-weight: 600;
+  padding: 2px 6px;
+  border-radius: 20px;
+  min-width: 20px;
+  text-align: center;
+}
+
+.sidebar-footer {
+  padding: 16px;
+  border-top: 1px solid var(--border);
+  font-size: 12px;
+  color: var(--text3);
+}
+.status-dot {
+  display: inline-block;
+  width: 7px; height: 7px;
+  background: var(--green);
+  border-radius: 50%;
+  margin-right: 6px;
+  animation: pulse 2s ease-in-out infinite;
+}
+@keyframes pulse {
+  0%,100% { opacity: 1; }
+  50% { opacity: 0.4; }
+}
+
+/* ─── MAIN CONTENT ─── */
+#main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.content {
+  flex: 1;
+  overflow-y: auto;
+  padding: 16px;
+  -webkit-overflow-scrolling: touch;
+}
+@media (min-width: 768px) { .content { padding: 28px; } }
+
+/* ─── VIEWS ─── */
+.view { display: none; }
+.view.active { display: block; }
+
+/* ─── SECTION TITLE ─── */
+.section-title {
+  font-family: 'Syne', sans-serif;
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--text);
+  margin-bottom: 16px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.section-title .pill {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 11px;
+  font-weight: 500;
+  background: rgba(79,125,255,0.15);
+  color: var(--blue-light);
+  padding: 3px 9px;
+  border-radius: 20px;
+  border: 1px solid rgba(79,125,255,0.2);
+}
+
+/* ─── CARD ─── */
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  flex: 1 1 130px;
+  display: flex; align-items: center; gap: 12px;
+  padding: 10px 14px;
+  margin-bottom: 20px;
+}
+
+/* ─── STATS GRID ─── */
+.stats-grid {
+  display: flex; flex-wrap: wrap;
+
+  gap: 10px;
+  margin-bottom: 16px;
+}
+
+.stat-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  flex: 1 1 130px;
+  display: flex; align-items: center; gap: 12px;
+  padding: 10px 14px;
+  position: relative;
+  overflow: hidden;
+}
+.stat-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; bottom: 0; right: auto;
+  width: 3px; height: auto;
+  border-radius: var(--radius-sm) 0 0 var(--radius-sm);
+}
+.stat-card.blue::before { background: linear-gradient(180deg, var(--accent), var(--accent2)); }
+.stat-card.green::before { background: var(--green); }
+.stat-card.amber::before { background: var(--amber); }
+
+.stat-label { font-size: 11px; color: var(--text3); letter-spacing: 0.3px; margin-bottom: 2px; }
+.stat-value { font-family: 'Syne', sans-serif; font-size: 22px; font-weight: 700; line-height: 1; }
+.stat-sub { font-size: 11px; color: var(--text3); margin-top: 1px; }
+
+/* ─── BÚSQUEDA PRINCIPAL ─── */
+.search-hero {
+  background: linear-gradient(135deg, rgba(79,125,255,0.12), rgba(123,94,167,0.08));
+  border: 1px solid rgba(79,125,255,0.25);
+  border-radius: var(--radius);
+  padding: 28px 24px;
+  margin-bottom: 20px;
+}
+.search-hero-title {
+  font-family: 'Syne', sans-serif;
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--text);
+  margin-bottom: 6px;
+}
+.search-hero-sub {
+  font-size: 13px;
+  color: var(--text3);
+  margin-bottom: 20px;
+}
+
+.search-box-wrap {
+  position: relative;
+  max-width: 560px;
+}
+.search-box {
+  width: 100%;
+  background: var(--bg3);
+  border: 2px solid var(--border2);
+  border-radius: var(--radius-sm);
+  padding: 14px 50px 14px 18px;
+  color: var(--text);
+  font-family: 'DM Sans', sans-serif;
+  font-size: 16px;
+  outline: none;
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+.search-box:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgba(79,125,255,0.15);
+}
+.search-box::placeholder { color: var(--text3); }
+.search-icon {
+  position: absolute;
+  right: 16px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--text3);
+  pointer-events: none;
+}
+.search-box:focus ~ .search-icon { color: var(--accent); }
+
+/* Autocomplete */
+.autocomplete-results {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  background: var(--bg3);
+  border: 1px solid var(--accent);
+  border-radius: var(--radius-sm);
+  margin-top: 4px;
+  max-height: 260px;
+  overflow-y: auto;
+  z-index: 100;
+  box-shadow: var(--shadow);
+  display: none;
+}
+.autocomplete-results.show { display: block; }
+.autocomplete-item {
+  padding: 11px 16px;
+  font-size: 14px;
+  color: var(--text);
+  cursor: pointer;
+  border-bottom: 1px solid var(--border);
+  transition: background 0.1s;
+}
+.autocomplete-item:last-child { border-bottom: none; }
+.autocomplete-item:hover, .autocomplete-item.active {
+  background: rgba(79,125,255,0.15);
+}
+.autocomplete-item-sub {
+  font-size: 11px;
+  color: var(--text3);
+  margin-top: 2px;
+}
+
+/* ─── RESULTADOS DE BÚSQUEDA ─── */
+#resultados-wrap { display: none; }
+.resultado-destino-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+}
+.resultado-destino-title {
+  font-family: 'Syne', sans-serif;
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--text);
+}
+.resultado-tag {
+  font-size: 12px;
+  font-weight: 500;
+  background: rgba(45,212,160,0.12);
+  color: var(--green);
+  padding: 4px 12px;
+  border-radius: 20px;
+  border: 1px solid rgba(45,212,160,0.25);
+}
+.resultado-tag.ninguno {
+  background: rgba(240,82,82,0.1);
+  color: var(--red);
+  border-color: rgba(240,82,82,0.25);
+}
+
+/* ─── TARJETA DE RESULTADO DE RUTA ─── */
+.ruta-result-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  margin-bottom: 14px;
+  overflow: hidden;
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+.ruta-result-card:hover {
+  border-color: var(--border2);
+  box-shadow: 0 2px 12px rgba(0,0,0,0.2);
+}
+
+.ruta-result-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 20px;
+  border-bottom: 1px solid var(--border);
+  background: linear-gradient(135deg, rgba(79,125,255,0.08), rgba(123,94,167,0.05));
+}
+.ruta-result-avatar {
+  width: 36px; height: 36px;
+  border-radius: 10px;
+  background: linear-gradient(135deg, var(--accent), var(--accent2));
+  display: flex; align-items: center; justify-content: center;
+  font-family: 'Syne', sans-serif;
+  font-weight: 700; font-size: 13px; color: #fff;
+  flex-shrink: 0;
+}
+.ruta-result-nombre {
+  font-family: 'Syne', sans-serif;
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--text);
+}
+.ruta-result-tiempo {
+  font-size: 11px;
+  color: var(--text3);
+  margin-top: 2px;
+}
+.ruta-result-tarifa { display: none; }
+
+/* Paradas de entrega */
+.paradas-list {
+  padding: 0;
+}
+.parada-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  padding: 14px 20px;
+  border-bottom: 1px solid rgba(42,47,74,0.4);
+  transition: background 0.1s;
+}
+.parada-item:last-child { border-bottom: none; }
+.parada-item:hover { background: rgba(79,125,255,0.04); }
+
+.parada-num {
+  width: 24px; height: 24px;
+  border-radius: 50%;
+  background: rgba(79,125,255,0.15);
+  color: var(--blue-light);
+  font-size: 11px;
+  font-weight: 700;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+.parada-info { flex: 1; min-width: 0; }
+.parada-destino {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text);
+  margin-bottom: 4px;
+}
+.parada-lugar {
+  font-size: 12px;
+  color: var(--text3);
+  line-height: 1.4;
+  display: flex;
+  align-items: flex-start;
+  gap: 5px;
+}
+.parada-meta {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 4px;
+  flex-shrink: 0;
+}
+@media (max-width: 700px) {
+  .parada-item { flex-wrap: wrap; }
+  .parada-num { margin-top: 0; }
+  .parada-meta { flex-direction: row; flex-wrap: wrap; align-items: flex-start; justify-content: flex-start; margin-top: 4px; width: 100%; }
+  .parada-dias { justify-content: flex-start; }
+  .ruta-result-tarifa { margin-left: 0; margin-top: 4px; width: 100%; text-align: left; }
+}
+.parada-dias {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  justify-content: flex-end;
+}
+.dia-chip {
+  font-size: 10px;
+  font-weight: 600;
+  padding: 3px 8px;
+  border-radius: 20px;
+  background: rgba(79,125,255,0.12);
+  color: var(--blue-light);
+  border: 1px solid rgba(79,125,255,0.2);
+  white-space: nowrap;
+}
+.parada-horario {
+  font-size: 11px;
+  color: var(--amber);
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+/* ─── FILTER BAR ─── */
+.filter-bar {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 18px;
+  flex-wrap: wrap;
+  align-items: center;
+}
+.filter-input {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 8px 14px;
+  color: var(--text);
+  font-family: 'DM Sans', sans-serif;
+  font-size: 13px;
+  outline: none;
+  flex: 1 1 100%;
+}
+@media (min-width: 576px) { .filter-input { flex: 1; min-width: 200px; } }
+.filter-input:focus { border-color: var(--accent); }
+.filter-input::placeholder { color: var(--text3); }
+.filter-select {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 8px 14px;
+  color: var(--text2);
+  font-family: 'DM Sans', sans-serif;
+  font-size: 13px;
+  cursor: pointer;
+  outline: none;
+  flex: 1 1 auto;
+}
+.filter-select option { background: var(--bg2); }
+.filter-select:focus { border-color: var(--accent); }
+
+/* ─── ENCOMENDISTA CARD ─── */
+.enc-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  flex: 1 1 130px;
+  display: flex; align-items: center; gap: 12px;
+  padding: 16px 20px;
+  margin-bottom: 12px;
+  transition: border-color 0.15s;
+}
+.enc-card:hover { border-color: var(--border2); }
+.enc-header { display: flex; align-items: flex-start; gap: 14px; flex-wrap: wrap; }
+.enc-avatar {
+  width: 44px; height: 44px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--accent), var(--accent2));
+  display: flex; align-items: center; justify-content: center;
+  font-family: 'Syne', sans-serif;
+  font-weight: 700; font-size: 15px; color: #fff;
+  flex-shrink: 0;
+}
+.enc-name { font-size: 15px; font-weight: 600; color: var(--text); }
+.enc-phone { font-size: 12px; color: var(--text3); margin-top: 2px; }
+.enc-actions {
+  margin-left: auto;
+  display: flex;
+  gap: 8px;
+}
+.enc-body { margin-top: 14px; display: flex; gap: 8px; flex-wrap: wrap; }
+.enc-tag {
+  font-size: 12px;
+  background: rgba(79,125,255,0.1);
+  color: var(--blue-light);
+  padding: 4px 10px;
+  border-radius: 20px;
+  border: 1px solid rgba(79,125,255,0.2);
+}
+.enc-meta {
+  font-size: 12px;
+  color: var(--text3);
+  margin-top: 8px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 12px;
+}
+.enc-meta span { color: var(--text2); }
+
+/* ─── FORMS ─── */
+.form-grid { display: grid; grid-template-columns: 1fr; gap: 16px; }
+@media (min-width: 768px) { .form-grid { grid-template-columns: 1fr 1fr; gap: 18px; } }
+
+.form-group { display: flex; flex-direction: column; gap: 7px; position: relative; }
+.form-group.full { grid-column: 1 / -1; }
+.form-label { font-size: 12px; font-weight: 500; color: var(--text2); letter-spacing: 0.3px; }
+.form-input, .form-select {
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 10px 14px;
+  color: var(--text);
+  font-family: 'DM Sans', sans-serif;
+  font-size: 14px;
+  outline: none;
+  transition: border-color 0.15s, box-shadow 0.15s;
+  width: 100%;
+}
+.form-input:focus, .form-select:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgba(79,125,255,0.15);
+}
+.form-select { cursor: pointer; }
+.form-select option { background: var(--bg3); }
+
+.section-divider {
+  font-size: 11px;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: var(--text3);
+  grid-column: 1 / -1;
+  padding-top: 8px;
+  border-top: 1px solid var(--border);
+}
+
+.btn {
+  padding: 10px 22px;
+  border-radius: var(--radius-sm);
+  font-family: 'DM Sans', sans-serif;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.15s;
+  border: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+.btn-primary { background: var(--accent); color: #fff; }
+.btn-primary:hover { background: #6b91ff; }
+.btn-secondary { background: transparent; color: var(--text2); border: 1px solid var(--border2); }
+.btn-secondary:hover { background: var(--bg3); color: var(--text); }
+.btn-danger { background: rgba(240,82,82,0.15); color: var(--red); border: 1px solid rgba(240,82,82,0.3); }
+.btn-danger:hover { background: rgba(240,82,82,0.25); }
+.btn-sm { padding: 6px 12px; font-size: 12px; }
+
+.form-actions {
+  display: flex;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 24px;
+  padding-top: 18px;
+  border-top: 1px solid var(--border);
+}
+
+/* ─── TABS MODAL ─── */
+.modal-tab {
+  padding: 9px 18px;
+  background: none;
+  border: none;
+  border-bottom: 2px solid transparent;
+  color: var(--text3);
+  font-family: 'DM Sans', sans-serif;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.15s;
+  margin-bottom: -1px;
+  white-space: nowrap;
+}
+.modal-tab:hover { color: var(--text2); }
+.modal-tab.active { color: var(--blue-light); border-bottom-color: var(--accent); }
+
+/* ─── RUTAS EDITOR ─── */
+.ruta-row {
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 14px;
+  margin-bottom: 10px;
+}
+.ruta-row-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 10px;
+  flex-wrap: wrap;
+}
+.ruta-row-num {
+  width: 24px; height: 24px;
+  border-radius: 50%;
+  background: rgba(79,125,255,0.2);
+  color: var(--blue-light);
+  font-size: 11px;
+  font-weight: 700;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+}
+.ruta-row-fields {
+  display: flex; flex-wrap: wrap;
+
+  gap: 10px;
+}
+@media (min-width: 576px) { .ruta-row-fields { grid-template-columns: 2fr 1fr; } }
+
+.ruta-days-row {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+  margin-top: 8px;
+}
+.ruta-day-chip {
+  padding: 4px 10px;
+  border-radius: 20px;
+  border: 1px solid var(--border2);
+  background: var(--bg4);
+  font-size: 11px;
+  cursor: pointer;
+  color: var(--text2);
+  transition: all 0.12s;
+  user-select: none;
+}
+.ruta-day-chip.sel {
+  background: rgba(79,125,255,0.2);
+  border-color: var(--accent);
+  color: var(--blue-light);
+}
+
+/* ─── MODAL ─── */
+.modal-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.7);
+  z-index: 1000;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+}
+.modal-overlay.open { display: flex; }
+.modal {
+  background: var(--bg2);
+  border: 1px solid var(--border2);
+  border-radius: 16px;
+  padding: 10px 14px;
+  max-width: 680px;
+  width: 100%;
+  max-height: 95vh;
+  overflow-y: auto;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+}
+@media (min-width: 768px) { .modal { padding: 28px; } }
+.modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 20px;
+}
+.modal-title {
+  font-family: 'Syne', sans-serif;
+  font-size: 18px;
+  font-weight: 700;
+}
+.modal-close {
+  width: 32px; height: 32px;
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  color: var(--text2);
+  font-size: 18px;
+  line-height: 1;
+}
+.modal-close:hover { background: var(--bg4); color: var(--text); }
+
+/* ─── TOAST ─── */
+#toast {
+  position: fixed;
+  bottom: 28px;
+  right: 28px;
+  background: var(--bg2);
+  border: 1px solid var(--border2);
+  border-radius: var(--radius-sm);
+  flex: 1 1 130px;
+  display: flex; align-items: center; gap: 12px;
+  padding: 14px 20px;
+  font-size: 14px;
+  color: var(--text);
+  box-shadow: var(--shadow);
+  z-index: 9999;
+  transform: translateY(20px);
+  opacity: 0;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  max-width: calc(100vw - 56px);
+}
+#toast.show { transform: translateY(0); opacity: 1; }
+#toast .toast-icon { font-size: 18px; flex-shrink: 0; }
+
+/* ─── EMPTY STATE ─── */
+.empty-state {
+  text-align: center;
+  padding: 48px 20px;
+  color: var(--text3);
+}
+.empty-state svg { opacity: 0.3; margin-bottom: 16px; }
+.empty-state p { font-size: 14px; margin-top: 8px; }
+
+/* ─── QUICK TAGS BÚSQUEDA ─── */
+.quick-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 16px;
+}
+.quick-tag {
+  padding: 5px 13px;
+  border-radius: 20px;
+  border: 1px solid var(--border2);
+  background: var(--bg3);
+  font-size: 12px;
+  color: var(--text2);
+  cursor: pointer;
+  transition: all 0.12s;
+  user-select: none;
+}
+.quick-tag:hover {
+  border-color: var(--accent);
+  color: var(--blue-light);
+  background: rgba(79,125,255,0.1);
+}
+
+/* ─── IMPORT CSV ─── */
+.import-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 22px;
+  border-radius: var(--radius-sm);
+  background: transparent;
+  color: var(--text2);
+  border: 1px solid var(--border2);
+  font-family: 'DM Sans', sans-serif;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+.import-label:hover { background: var(--bg3); color: var(--text); }
+
+/* ─── PEDIDO LAYOUT ─── */
+
+/* Outer two-column layout: form | preview */
+.pedido-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  align-items: stretch;
+}
+@media (min-width: 760px) {
+  .pedido-wrap {
+    flex-direction: row;
+    align-items: flex-start;
+  }
+  .pedido-form-col   { flex: 3; min-width: 0; }
+  .pedido-preview-col { flex: 2; min-width: 0; position: sticky; top: 16px; }
+}
+
+/* Inner field grid inside each card */
+.ped-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+}
+.ped-grid .form-group      { margin: 0; }
+.ped-grid .form-group.full { grid-column: 1 / -1; }
+@media (max-width: 520px) {
+  .ped-grid { grid-template-columns: 1fr; }
+  .ped-grid .form-group.full { grid-column: auto; }
+}
+
+/* Uniform input sizing */
+.ped-input {
+  padding: 11px 14px;
+  font-size: 14px;
+  min-height: 46px;
+  width: 100%;
+  box-sizing: border-box;
+}
+textarea.ped-input { min-height: 70px; resize: vertical; }
+
+/* Section title inside cards */
+.ped-section-title {
+  font-size: 11px;
+  letter-spacing: 1.3px;
+  text-transform: uppercase;
+  color: var(--text3);
+  font-weight: 700;
+  margin-bottom: 14px;
+}
+
+/* Preview box */
+#ped-preview {
+  background: var(--bg3);
+  border: 1px solid var(--border2);
+  border-radius: var(--radius);
+  padding: 20px 22px;
+  font-size: 14px;
+  line-height: 1.95;
+  color: var(--text2);
+  white-space: pre-wrap;
+  word-break: break-word;
+  min-height: 200px;
+}
+
+/* Tipo envío chips */
+.tipo-envio-chip {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 10px 20px;
+  border-radius: var(--radius-sm);
+  border: 2px solid var(--border2);
+  background: var(--bg3);
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  color: var(--text2);
+  transition: all 0.15s;
+  user-select: none;
+  flex: 1;
+}
+.tipo-envio-chip:hover { border-color: var(--accent); color: var(--text); background: var(--bg4); }
+.tipo-envio-chip.selected {
+  background: rgba(79,125,255,0.15);
+  border-color: var(--accent);
+  color: var(--blue-light);
+}
+
+/* ─── SCROLLBAR ─── */
+::-webkit-scrollbar { width: 5px; height: 5px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 10px; }
+
+/* ─── MOBILE SIDEBAR ─── */
+.sidebar-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.5);
+  z-index: 40;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+.sidebar-overlay.show { opacity: 1; }
+
+@media (max-width: 767px) {
+  #sidebar {
+    position: fixed;
+    left: 0; top: 0; bottom: 0;
+    transform: translateX(-100%);
+  }
+  #sidebar.open {
+    transform: translateX(0);
+    box-shadow: 4px 0 24px rgba(0,0,0,0.5);
+  }
+  .sidebar-overlay.show { display: block; }
+  .menu-btn { display: block; }
+  .global-topbar { padding: 0 16px; gap: 12px; }
+  .mobile-close-container { display: block; }
+  .topbar-date { display: none; }
+}
+
+/* ─── LIGHT MODE OVERRIDES ─── */
+body.light .form-input, body.light .form-select, body.light .filter-input, body.light .filter-select {
+  background: #f5f7ff; border-color: #c8cde0; color: #1a1c2e;
+}
+body.light .form-input::placeholder, body.light .filter-input::placeholder { color: #9099b8; }
+body.light .form-input:focus, body.light .form-select:focus, body.light .filter-input:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(58,102,240,0.12); }
+body.light .form-select option, body.light .filter-select option { background: #fff; color: #1a1c2e; }
+body.light .autocomplete-results { background: #fff; border-color: #3a66f0; }
+body.light .autocomplete-item { color: #1a1c2e; border-bottom-color: #d8dce8; }
+body.light .autocomplete-item:hover, body.light .autocomplete-item.active { background: rgba(58,102,240,0.1); }
+body.light .modal { background: #fff; border-color: #c4c9de; }
+body.light .modal-tab { color: #8890b0; }
+body.light .modal-tab.active { color: #3a66f0; border-bottom-color: #3a66f0; }
+body.light .ruta-row { background: #f5f7ff; border-color: #d0d5ea; }
+body.light .ruta-day-chip { background: #eaecf5; border-color: #c8cde0; color: #4a5070; }
+body.light .ruta-day-chip.sel { background: rgba(58,102,240,0.12); border-color: #3a66f0; color: #3a66f0; }
+body.light .stat-card { background: #fff; border-color: #d8dce8; }
+body.light .stat-label, body.light .stat-sub { color: #8890b0; }
+body.light .card, body.light .enc-card, body.light .ruta-result-card { background: #fff; border-color: #d8dce8; }
+body.light .enc-tag { background: rgba(58,102,240,0.08); color: #3a66f0; border-color: rgba(58,102,240,0.2); }
+body.light .nav-label { color: #a0a8c8; }
+body.light .section-divider { color: #8890b0; border-top-color: #d8dce8; }
+body.light .empty-state { color: #8890b0; }
+body.light .parada-item:hover { background: rgba(58,102,240,0.04); }
+body.light .dia-chip { background: rgba(58,102,240,0.08); color: #3a66f0; border-color: rgba(58,102,240,0.18); }
+body.light .search-box { background: #f5f7ff; border-color: #c8cde0; color: #1a1c2e; }
+body.light .search-box:focus { border-color: #3a66f0; box-shadow: 0 0 0 3px rgba(58,102,240,0.12); }
+body.light .search-box::placeholder { color: #9099b8; }
+body.light .quick-tag { background: #f0f2f8; border-color: #c4c9de; color: #4a5070; }
+body.light .quick-tag:hover { border-color: #3a66f0; color: #3a66f0; background: rgba(58,102,240,0.08); }
+body.light .search-hero { background: linear-gradient(135deg, rgba(58,102,240,0.07), rgba(107,74,171,0.05)); border-color: rgba(58,102,240,0.18); }
+body.light ::-webkit-scrollbar-thumb { background: #c4c9de; }
+body.light .nav-badge { background: #3a66f0; }
+</style>
+</head>
+<body>
+
+<div class="sidebar-overlay" id="sidebar-overlay" onclick="toggleSidebar()"></div>
+
+<!-- ========== TOPBAR ========== -->
+<header class="global-topbar">
+  <button class="menu-btn" onclick="toggleSidebar()">
+    <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+      <line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/>
+    </svg>
+  </button>
+
+  <div class="topbar-brand">
+    <div class="logo-mark">Novoa<span>Shoes</span></div>
+    <div class="logo-sub">CONSULTA DE RUTAS</div>
+  </div>
+
+  <div style="flex:1"></div>
+  <div class="topbar-date" id="topbar-date"></div>
+
+  <button id="theme-toggle" onclick="toggleTheme()" title="Cambiar tema" style="
+    width:36px;height:36px;background:var(--bg3);border:1px solid var(--border2);
+    border-radius:var(--radius-sm);cursor:pointer;display:flex;align-items:center;
+    justify-content:center;font-size:17px;line-height:1;transition:background 0.15s;flex-shrink:0;">🌙</button>
+</header>
+
+<!-- ========== MAIN WRAPPER ========== -->
+<div class="main-wrapper">
+
+  <!-- ─── SIDEBAR ─── -->
+  <aside id="sidebar">
+    <div class="mobile-close-container">
+      <button class="close-sidebar-btn" onclick="toggleSidebar()">
+        <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+        </svg>
+      </button>
+    </div>
+
+    <div class="nav-section">
+      <div class="nav-label">Principal</div>
+      <button class="nav-item active" onclick="navigate('buscar')">
+        <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
+          <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+        </svg>
+        Consultar Rutas
+      </button>
+
+      <div class="nav-label">Administración</div>
+      <button class="nav-item" onclick="navigate('pedido')">
+        <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
+          <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+          <polyline points="14 2 14 8 20 8"/>
+          <line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/>
+        </svg>
+        Crear Pedido
+      </button>
+      <button class="nav-item" onclick="navigate('encomendistas')">
+        <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
+          <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+          <circle cx="9" cy="7" r="4"/>
+          <path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/>
+        </svg>
+        Empresas de Envío
+        <span class="nav-badge" id="badge-enc">0</span>
+      </button>
+    </div>
+
+    <div class="sidebar-footer">
+      <div><span class="status-dot"></span>Sistema activo</div>
+      <div style="margin-top:6px;font-size:11px;">El Salvador · LocalStorage</div>
+    </div>
+  </aside>
+
+  <!-- ─── MAIN ─── -->
+  <div id="main">
+    <div class="content">
+
+      <!-- ═══ CONSULTAR RUTAS ═══ -->
+      <div id="view-buscar" class="view active">
+
+        <!-- Stats -->
+        <div class="stats-grid">
+          <div class="stat-card blue">
+            <div class="stat-label">Encomendistas</div>
+            <div class="stat-value" id="stat-encs">0</div>
+            <div class="stat-sub">empresas registradas</div>
+          </div>
+          <div class="stat-card green">
+            <div class="stat-label">Rutas Totales</div>
+            <div class="stat-value" id="stat-rutas">0</div>
+            <div class="stat-sub">puntos de entrega</div>
+          </div>
+          <div class="stat-card amber">
+            <div class="stat-label">Destinos Cubiertos</div>
+            <div class="stat-value" id="stat-destinos">0</div>
+            <div class="stat-sub">municipios disponibles</div>
+          </div>
+        </div>
+
+        <!-- Search hero -->
+        <div class="search-hero">
+          <div class="search-hero-title">¿A dónde quieres enviar?</div>
+          <div class="search-hero-sub">Busca un municipio para ver qué empresas cubren esa ruta, sus horarios y puntos de entrega.</div>
+          <div class="search-box-wrap">
+            <input type="text" class="search-box" id="buscar-destino-input"
+              placeholder="Escribe un municipio o ciudad..."
+              autocomplete="off">
+            <span class="search-icon">
+              <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+              </svg>
+            </span>
+            <div class="autocomplete-results" id="buscar-autocomplete"></div>
+          </div>
+          <div class="quick-tags" id="quick-tags"></div>
+        </div>
+
+        <!-- Resultados -->
+        <div id="resultados-wrap">
+          <div class="resultado-destino-header">
+            <div class="resultado-destino-title" id="resultado-titulo">—</div>
+            <span class="resultado-tag" id="resultado-tag">0 empresas</span>
+          </div>
+          <div id="resultado-lista"></div>
+        </div>
+
+      </div><!-- /view-buscar -->
+
+      <!-- ═══ PEDIDO ═══ -->
+      <div id="view-pedido" class="view">
+        <div class="section-title">Crear Pedido — Confirmación para cliente</div>
+        <div class="pedido-wrap">
+
+          <!-- ── FORMULARIO ── -->
+          <div class="pedido-form-col">
+
+            <!-- Tipo de envío -->
+            <div class="card" style="padding:18px 20px;margin-bottom:16px;">
+              <div class="form-label" style="margin-bottom:12px;font-size:13px;">Tipo de envío</div>
+              <div style="display:flex;gap:10px;flex-wrap:wrap;">
+                <label class="tipo-envio-chip" id="chip-encomienda" onclick="setTipoEnvio('encomienda')">
+                  🚐 Encomienda
+                </label>
+                <label class="tipo-envio-chip" id="chip-repartidor" onclick="setTipoEnvio('repartidor')">
+                  🛵 Repartidor local
+                </label>
+              </div>
+            </div>
+
+            <!-- Datos del cliente -->
+            <div class="card" style="padding:20px;margin-bottom:16px;">
+              <div class="ped-section-title">Cliente</div>
+              <div class="ped-grid">
+                <div class="form-group">
+                  <label class="form-label">Nombre del cliente *</label>
+                  <input class="form-input ped-input" id="ped-cliente" placeholder="Ej: Henry Urbina" oninput="previsualizarPedido()">
+                </div>
+                <div class="form-group">
+                  <label class="form-label">Contacto (WhatsApp) *</label>
+                  <input class="form-input ped-input" id="ped-contacto" placeholder="6457-2654" oninput="previsualizarPedido()">
+                </div>
+              </div>
+            </div>
+
+            <!-- Artículo -->
+            <div class="card" style="padding:20px;margin-bottom:16px;">
+              <div class="ped-section-title">Artículo</div>
+              <div class="ped-grid">
+                <div class="form-group">
+                  <label class="form-label">Descripción del artículo *</label>
+                  <input class="form-input ped-input" id="ped-articulo" placeholder="Ej: New Balance 530" oninput="previsualizarPedido()">
+                </div>
+                <div class="form-group">
+                  <label class="form-label">Talla</label>
+                  <input class="form-input ped-input" id="ped-talla" placeholder="Ej: 8, XL, 38" oninput="previsualizarPedido()">
+                </div>
+                <div class="form-group">
+                  <label class="form-label">Color</label>
+                  <input class="form-input ped-input" id="ped-color" placeholder="Ej: Blanco, Negro" oninput="previsualizarPedido()">
+                </div>
+                <div class="form-group">
+                  <label class="form-label">Precio artículo (USD) *</label>
+                  <input class="form-input ped-input" type="number" id="ped-precio" placeholder="65.00" step="0.01" min="0" oninput="previsualizarPedido()">
+                </div>
+                <div class="form-group">
+                  <label class="form-label">Costo de envío (USD)</label>
+                  <input class="form-input ped-input" type="number" id="ped-envio" placeholder="3.00" step="0.25" min="0" value="3" oninput="previsualizarPedido()">
+                </div>
+                <div class="form-group full">
+                  <label class="form-label">Notas (opcional)</label>
+                  <textarea class="form-input ped-input" id="ped-notas" rows="2" placeholder="Color, instrucciones especiales..." oninput="previsualizarPedido()" style="resize:vertical;min-height:64px;"></textarea>
+                </div>
+              </div>
+            </div>
+
+            <!-- Envío por Encomienda -->
+            <div class="card" id="ped-block-encomienda" style="padding:20px;margin-bottom:16px;display:none;">
+              <div class="ped-section-title">Envío</div>
+              <div class="ped-grid">
+                <div class="form-group full">
+                  <label class="form-label">Destino *</label>
+                  <input class="form-input ped-input" id="ped-destino-texto" placeholder="Escribe el destino..." oninput="buscarEncomendistasParaDestino()" autocomplete="off">
+                </div>
+                <div class="form-group full" id="ped-enc-wrap" style="display:none;">
+                  <label class="form-label">Empresa de envío disponible</label>
+                  <div id="ped-enc-lista" style="display:flex;flex-direction:column;gap:8px;"></div>
+                </div>
+                <div class="form-group full" id="ped-enc-selected-wrap" style="display:none;">
+                  <label class="form-label">Empresa seleccionada</label>
+                  <div id="ped-enc-selected-card" style=""></div>
+                  <button onclick="cambiarEncomienda()" style="margin-top:8px;padding:6px 14px;background:transparent;color:var(--text3);border:1px solid var(--border2);border-radius:var(--radius-sm);font-size:12px;cursor:pointer;font-family:DM Sans,sans-serif;">↩ Cambiar empresa</button>
+                </div>
+                <div class="form-group full" id="ped-fechas-wrap" style="display:none;">
+                  <label class="form-label">Fecha de entrega</label>
+                  <div id="ped-fechas-lista" style="display:flex;flex-wrap:wrap;gap:8px;margin-top:4px;"></div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Envío por Repartidor -->
+            <div class="card" id="ped-block-repartidor" style="padding:20px;margin-bottom:16px;display:none;">
+              <div class="ped-section-title">Envío — Repartidor local</div>
+              <div class="ped-grid">
+                <div class="form-group full">
+                  <label class="form-label">Dirección exacta *</label>
+                  <input class="form-input ped-input" id="ped-dir" placeholder="Colonia, calle, punto de referencia..." oninput="previsualizarPedido()">
+                </div>
+                <div class="form-group">
+                  <label class="form-label">Municipio</label>
+                  <input class="form-input ped-input" id="ped-muni" list="muni-list-ped" placeholder="Selecciona el municipio" oninput="previsualizarPedido()">
+                  <datalist id="muni-list-ped"></datalist>
+                </div>
+                <div class="form-group">
+                  <label class="form-label">Fecha de entrega</label>
+                  <input class="form-input ped-input" type="date" id="ped-fecha-rep" oninput="previsualizarPedido()">
+                </div>
+                <div class="form-group">
+                  <label class="form-label">Hora desde</label>
+                  <input class="form-input ped-input" type="time" id="ped-hora-inicio" oninput="previsualizarPedido()">
+                </div>
+                <div class="form-group">
+                  <label class="form-label">Hora hasta</label>
+                  <input class="form-input ped-input" type="time" id="ped-hora-fin" oninput="previsualizarPedido()">
+                </div>
+              </div>
+            </div>
+
+            <div class="form-actions" style="padding-top:0;border:none;justify-content:stretch;gap:12px;">
+              <button class="btn btn-secondary" onclick="limpiarPedido()" style="flex:1;">Limpiar</button>
+              <button class="btn btn-primary" onclick="copiarConfirmacion()" style="flex:2;">
+                <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+                Copiar confirmación
+              </button>
+            </div>
+            <div id="ped-copy-ok" style="display:none;margin-top:10px;color:var(--green);font-size:13px;font-weight:500;text-align:center;">✓ ¡Copiado al portapapeles!</div>
+          </div>
+
+          <!-- ── VISTA PREVIA ── -->
+          <div class="pedido-preview-col">
+            <div class="ped-section-title" style="margin-bottom:12px;">Vista previa del mensaje</div>
+            <div id="ped-preview" class="ped-preview-box">Completa el formulario para ver la confirmación...</div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- ═══ ENCOMENDISTAS ═══ -->
+      <div id="view-encomendistas" class="view">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;flex-wrap:wrap;gap:10px;">
+          <div class="section-title" style="margin:0;">Directorio de Empresas de Envío</div>
+          <div style="display:flex;gap:8px;flex-wrap:wrap;">
+            <label class="import-label" title="Importar rutas por CSV">
+              <input type="file" accept=".csv" style="display:none;" onchange="importarCSV(this.files[0]);this.value='';">
+              <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                <polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/>
+              </svg>
+              Importar CSV
+            </label>
+            <button class="btn btn-primary" onclick="abrirModalEncomendista()">
+              <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
+              </svg>
+              Agregar
+            </button>
+          </div>
+        </div>
+
+        <div class="filter-bar">
+          <input type="text" class="filter-input" id="enc-search"
+            placeholder="Buscar por nombre o municipio..." oninput="renderEncomendistas()">
+          <select class="filter-select" id="enc-filter-day" onchange="renderEncomendistas()">
+            <option value="">Todos los días</option>
+            <option>Lunes</option><option>Martes</option><option>Miércoles</option>
+            <option>Jueves</option><option>Viernes</option><option>Sábado</option><option>Domingo</option>
+          </select>
+        </div>
+
+        <div id="enc-list"></div>
+      </div>
+
+    </div><!-- /content -->
+  </div><!-- /main -->
+</div><!-- /main-wrapper -->
+
+<!-- ========== MODAL ENCOMENDISTA ========== -->
+<div class="modal-overlay" id="modal-enc">
+  <div class="modal" style="max-width:860px;">
+    <div class="modal-header">
+      <div class="modal-title" id="modal-enc-title">Encomendista</div>
+      <div class="modal-close" onclick="cerrarModal('modal-enc')">✕</div>
+    </div>
+
+    <div style="display:flex;gap:4px;margin-bottom:20px;border-bottom:1px solid var(--border);overflow-x:auto;">
+      <button class="modal-tab active" id="tab-info" onclick="switchTab('info')">Datos generales</button>
+      <button class="modal-tab" id="tab-rutas" onclick="switchTab('rutas')">Rutas y puntos de entrega</button>
+    </div>
+
+    <!-- Panel: Datos -->
+    <div id="panel-info">
+      <div class="form-grid">
+        <input type="hidden" id="enc-edit-id">
+        <div class="form-group full">
+          <label class="form-label">Nombre de la Empresa o Repartidor *</label>
+          <input class="form-input" id="enc-nombre" placeholder="Ej: Transportes Rivera">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Teléfono / WhatsApp</label>
+          <input class="form-input" id="enc-telefono" placeholder="7777-0000">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Tiempo Estimado de Entrega</label>
+          <input class="form-input" id="enc-tiempo" placeholder="Ej: 1 día, 3–4 horas">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Tarifa Base Envío (USD)</label>
+          <input class="form-input" type="number" id="enc-tarifa" placeholder="2.00" step="0.25" min="0">
+        </div>
+      </div>
+      <div style="margin-top:16px;padding:12px 14px;background:rgba(79,125,255,0.07);border:1px solid rgba(79,125,255,0.2);border-radius:var(--radius-sm);font-size:12px;color:var(--text2);line-height:1.4;">
+        💡 Los días de viaje y horarios se configuran por punto de entrega en la pestaña <strong>Rutas y puntos de entrega</strong>.
+      </div>
+    </div>
+
+    <!-- Panel: Rutas -->
+    <div id="panel-rutas" style="display:none;">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;flex-wrap:wrap;gap:10px;">
+        <div style="font-size:13px;color:var(--text2);line-height:1.4;">Cada punto tiene su propio destino, horario y días de operación.</div>
+        <button class="btn btn-primary btn-sm" onclick="agregarRuta()">+ Agregar punto</button>
+      </div>
+      <div id="rutas-list"></div>
+    </div>
+
+    <div class="form-actions">
+      <button class="btn btn-secondary" onclick="cerrarModal('modal-enc')">Cancelar</button>
+      <button class="btn btn-primary" onclick="guardarEncomendista()">
+        <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/>
+          <polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/>
+        </svg>
+        Guardar cambios
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- ========== TOAST ========== -->
+<div id="toast">
+  <span class="toast-icon" id="toast-icon">✓</span>
+  <span id="toast-msg">Operación exitosa</span>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.2/papaparse.min.js"></script>
+<script>
+// ════════════════════════════════════════
+// THEME
+// ════════════════════════════════════════
+function toggleTheme() {
+  const isLight = document.body.classList.toggle('light');
+  const btn = document.getElementById('theme-toggle');
+  btn.textContent = isLight ? '☀️' : '🌙';
+  localStorage.setItem('sv_theme', isLight ? 'light' : 'dark');
+}
+function applyTheme() {
+  if (localStorage.getItem('sv_theme') === 'light') {
+    document.body.classList.add('light');
+    document.getElementById('theme-toggle').textContent = '☀️';
+  }
+}
+
+// ════════════════════════════════════════
+// UTILS
+// ════════════════════════════════════════
+function uid() {
+  return 'ENC-' + Date.now().toString(36).toUpperCase() + Math.random().toString(36).slice(2,5).toUpperCase();
+}
+function esc(s) {
+  return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+function getInitials(name) {
+  return (name||'').split(' ').slice(0,2).map(w => w[0]).join('').toUpperCase();
+}
+function toast(msg, type='success') {
+  const t = document.getElementById('toast');
+  document.getElementById('toast-icon').textContent = type==='success'?'✓':type==='error'?'✕':'ℹ';
+  document.getElementById('toast-msg').textContent = msg;
+  t.style.borderColor = type==='success'?'rgba(45,212,160,0.4)':type==='error'?'rgba(240,82,82,0.4)':'rgba(79,125,255,0.4)';
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 3000);
+}
+
+// ════════════════════════════════════════
+// STORAGE
+// ════════════════════════════════════════
+const DB = {
+  get:  () => JSON.parse(localStorage.getItem('sv_encomendistas') || '[]'),
+  set:  d  => localStorage.setItem('sv_encomendistas', JSON.stringify(d)),
+};
+
+// ════════════════════════════════════════
+// NAVEGACIÓN
+// ════════════════════════════════════════
+function navigate(view) {
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+  document.getElementById('view-' + view).classList.add('active');
+
+  // Activar nav-item correspondiente
+  document.querySelectorAll('.nav-item').forEach(n => {
+    if (n.getAttribute('onclick') === `navigate('${view}')`) n.classList.add('active');
+  });
+
+  if (view === 'buscar') renderStats();
+  if (view === 'pedido') {
+    renderStats();
+    cargarEncomendistasEnPedido();
+    // Always reset form state when opening pedido view
+    limpiarPedido();
+  }
+  if (view === 'encomendistas') renderEncomendistas();
+  updateBadges();
+  if (window.innerWidth < 768) toggleSidebar(false);
+}
+
+function toggleSidebar(forceState) {
+  const sidebar = document.getElementById('sidebar');
+  const overlay = document.getElementById('sidebar-overlay');
+  const isOpen  = forceState !== undefined ? forceState : !sidebar.classList.contains('open');
+  sidebar.classList.toggle('open', isOpen);
+  overlay.classList.toggle('show', isOpen);
+}
+
+// ════════════════════════════════════════
+// STATS
+// ════════════════════════════════════════
+function renderStats() {
+  const encs = DB.get();
+  const todasRutas = encs.flatMap(e => e.rutas || []);
+  const destinos = new Set(todasRutas.map(r => r.destino).filter(Boolean));
+  document.getElementById('stat-encs').textContent    = encs.length;
+  document.getElementById('stat-rutas').textContent   = todasRutas.length;
+  document.getElementById('stat-destinos').textContent= destinos.size;
+}
+
+function updateBadges() {
+  document.getElementById('badge-enc').textContent = DB.get().length;
+}
+
+// ════════════════════════════════════════
+// MUNICIPIOS (autocomplete)
+// ════════════════════════════════════════
+const MUNICIPIOS_POR_DEPTO = {
+  "Ahuachapán": ["Ahuachapán","Apaneca","Atiquizaya","Concepción de Ataco","El Refugio","Guaymango","Jujutla","San Francisco Menéndez","San Lorenzo","San Pedro Puxtla","Tacuba","Turín"],
+  "Santa Ana": ["Candelaria de la Frontera","Chalchuapa","Coatepeque","El Congo","El Porvenir","Masahuat","Metapán","San Antonio Pajonal","San Sebastián Salitrillo","Santa Ana","Santa Rosa Guachipilín","Santiago de la Frontera","Texistepeque"],
+  "Sonsonate": ["Acajutla","Armenia","Caluco","Cuisnahuat","Izalco","Juayúa","Nahuizalco","Nahulingo","Salcoatitán","San Antonio del Monte","San Julián","Santa Catarina Masahuat","Santa Isabel Ishuatán","Santo Domingo de Guzmán","Sonsonate","Sonzacate"],
+  "Chalatenango": ["Agua Caliente","Arcatao","Azacualpa","Cancasque","Chalatenango","Citalá","Comalapa","Concepción Quezaltepeque","Dulce Nombre de María","El Carrizal","El Paraíso","La Laguna","La Palma","La Reina","Las Flores","Las Vueltas","Nombre de Jesús","Nueva Concepción","Nueva Trinidad","Ojos de Agua","Potonico","San Antonio de la Cruz","San Antonio Los Ranchos","San Fernando","San Francisco Lempa","San Francisco Morazán","San Ignacio","San Isidro Labrador","San Luis del Carmen","San Miguel de Mercedes","San Rafael","Santa Rita","Tejutla"],
+  "La Libertad": ["Antiguo Cuscatlán","Chiltiupán","Ciudad Arce","Colón","Comasagua","Huizúcar","Jayaque","Jicalapa","La Libertad","Nuevo Cuscatlán","Opico","Quezaltepeque","Sacacoyo","San Juan Opico","San Matías","San Pablo Tacachico","Santa Tecla","Talnique","Tamanique","Teotepeque","Tepecoyo","Zaragoza"],
+  "Cuscatlán": ["Candelaria","Cojutepeque","El Carmen","El Rosario","Monte San Juan","Oratorio de Concepción","San Bartolomé Perulapía","San Cristóbal","San José Guayabal","San Pedro Perulapán","San Ramón","Santa Cruz Analquito","Santa Cruz Michapa","Suchitoto","Tenancingo"],
+  "San Salvador": ["Aguilares","Apopa","Ayutuxtepeque","Ciudad Delgado","Cuscatancingo","El Paisnal","Guazapa","Ilopango","Mejicanos","Nejapa","Panchimalco","Rosario de Mora","San Marcos","San Martín","San Salvador","Santiago Texacuangos","Santo Tomás","Soyapango","Tonacatepeque"],
+  "Cabañas": ["Cinquera","Dolores","Guacotecti","Ilobasco","Jutiapa","San Isidro","Sensuntepeque","Tejutepeque","Villa Victoria"],
+  "San Vicente": ["Apastepeque","Guadalupe","San Cayetano Istepeque","San Esteban Catarina","San Ildefonso","San Lorenzo","San Sebastián","San Vicente","Santa Clara","Santo Domingo","Tecoluca","Tepetitán","Verapaz"],
+  "La Paz": ["Cuyultitán","El Rosario","Jerusalén","Mercedes La Ceiba","Olocuilta","Paraíso de Osorio","San Antonio Masahuat","San Emigdio","San Francisco Chinameca","San Juan Nonualco","San Juan Talpa","San Juan Tepezontes","San Luis La Herradura","San Luis Talpa","San Miguel Tepezontes","San Pedro Masahuat","San Pedro Nonualco","San Rafael Obrajuelo","Santa María Ostuma","Santiago Nonualco","Tapalhuaca","Zacatecoluca"],
+  "Usulután": ["Alegría","Berlín","California","Concepción Batres","El Triunfo","Ereguayquín","Estanzuelas","Jiquilisco","Jucuapa","Jucuarán","Mercedes Umaña","Nueva Granada","Ozatlán","Puerto El Triunfo","San Agustín","San Buenaventura","San Dionisio","San Francisco Javier","Santa Elena","Santa María","Santiago de María","Tecapán","Usulután"],
+  "San Miguel": ["Carolina","Chapeltique","Chinameca","Chirilagua","Ciudad Barrios","Comacarán","El Tránsito","Lolotique","Moncagua","Nueva Guadalupe","Nuevo Edén de San Juan","Quelepa","San Antonio","San Gerardo","San Jorge","San Luis de la Reina","San Miguel","San Rafael Oriente","Sesori","Uluazapa"],
+  "Morazán": ["Arambala","Cacaopera","Chilanga","Corinto","Delicias de Concepción","El Divisadero","El Rosario","Gualococti","Guatajiagua","Joateca","Jocoaitique","Jocoro","Lolotiquillo","Meanguera","Osicala","Perquín","San Carlos","San Fernando","San Francisco Gotera","San Isidro","San Simón","Sensembra","Sociedad","Torola","Yamabal","Yoloaiquín"],
+  "La Unión": ["Anamorós","Bolívar","Concepción de Oriente","Conchagua","El Carmen","El Sauce","Intipucá","La Unión","Lislique","Meanguera del Golfo","Nueva Esparta","Pasaquina","Polorós","San Alejo","San José","Santa Rosa de Lima","Yayantique","Yucuaiquín"]
+};
+const TODOS_MUNICIPIOS = [];
+Object.entries(MUNICIPIOS_POR_DEPTO).forEach(([depto, munis]) => {
+  munis.forEach(m => TODOS_MUNICIPIOS.push({ municipio: m, departamento: depto }));
+});
+
+function normalize(s) {
+  return (s||'').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').trim();
+}
+
+// ════════════════════════════════════════
+// QUICK TAGS (destinos populares)
+// ════════════════════════════════════════
+function renderQuickTags() {
+  const encs = DB.get();
+  const allRutas = encs.flatMap(e => e.rutas || []);
+  const allDestinos = allRutas.map(r => r.destino).filter(Boolean);
+
+  // A departamento "tiene cobertura" si algún destino registrado matchea con
+  // alguno de sus municipios (usando municipioMatch), O si el nombre del depto
+  // aparece dentro de algún destino registrado
+  const deptosCubiertos = Object.keys(MUNICIPIOS_POR_DEPTO).filter(depto => {
+    const munis = MUNICIPIOS_POR_DEPTO[depto];
+    return allDestinos.some(d =>
+      munis.some(m => municipioMatch(d, m)) ||
+      municipioMatch(d, depto.split(' ')[0])
+    );
+  });
+
+  const el = document.getElementById('quick-tags');
+  if (!deptosCubiertos.length) { el.innerHTML = ''; return; }
+  el.innerHTML =
+    '<div style="font-size:11px;color:var(--text3);letter-spacing:0.5px;text-transform:uppercase;width:100%;margin-bottom:4px;">Buscar por departamento</div>' +
+    deptosCubiertos.map(d =>
+      `<span class="quick-tag" onclick="buscarDestino('${esc(d)}',true)">${esc(d)}</span>`
+    ).join('');
+}
+
+// ════════════════════════════════════════
+// AUTOCOMPLETE DE BÚSQUEDA
+// ════════════════════════════════════════
+function initBuscarAutocomplete() {
+  const input      = document.getElementById('buscar-destino-input');
+  const resultsDiv = document.getElementById('buscar-autocomplete');
+  let currentFocus = -1;
+
+  input.addEventListener('input', function() {
+    var val = this.value.trim();
+    resultsDiv.innerHTML = '';
+    resultsDiv.classList.remove('show');
+    currentFocus = -1;
+
+    if (!val) {
+      document.getElementById('resultados-wrap').style.display = 'none';
+      return;
+    }
+
+    var valN = normalize(val);
+    var encs = DB.get();
+    var destinosRutas = [];
+    var seen = {};
+    encs.forEach(function(e) {
+      (e.rutas||[]).forEach(function(r) {
+        if (r.destino && !seen[r.destino]) { seen[r.destino] = true; destinosRutas.push(r.destino); }
+      });
+    });
+
+    // Same fuzzy matching as buscarDestino
+    var queryWords = valN.split(/\s+/).filter(function(w){ return w.length >= 2; });
+    var conCobertura = {};
+    destinosRutas.forEach(function(d) {
+      var dn = normalize(d);
+      if (dn === valN || dn.indexOf(valN) !== -1 || valN.indexOf(dn) !== -1) { conCobertura[d] = true; return; }
+      if (queryWords.length > 0 && queryWords.every(function(w){ return dn.indexOf(w) !== -1; })) { conCobertura[d] = true; return; }
+      if (queryWords.some(function(w){ return dn.indexOf(w) !== -1; })) conCobertura[d] = true;
+    });
+
+    var items = [];
+    Object.keys(MUNICIPIOS_POR_DEPTO).forEach(function(depto) {
+      if (normalize(depto).indexOf(valN) !== -1)
+        items.push({ municipio: depto, departamento: '\uD83D\uDDFA\uFE0F Ver todos los destinos del depto.' });
+    });
+    Object.keys(conCobertura).forEach(function(d) {
+      items.push({ municipio: d, departamento: '\u2705 Con cobertura' });
+    });
+    TODOS_MUNICIPIOS.forEach(function(item) {
+      var mn = normalize(item.municipio);
+      if (mn.indexOf(valN) !== -1 && !conCobertura[item.municipio] && !MUNICIPIOS_POR_DEPTO[item.municipio])
+        items.push({ municipio: item.municipio, departamento: item.departamento });
+    });
+
+    if (items.length > 1) {
+      items.slice(0, 15).forEach(function(item) {
+        var div = document.createElement('div');
+        div.className = 'autocomplete-item';
+        var safeVal = val.replace(/[.*+?^${}()|[\]\\]/g,'\\$&');
+        var re = new RegExp('(' + safeVal + ')', 'gi');
+        div.innerHTML = '<div>' + item.municipio.replace(re,'<strong>$1</strong>') + '</div>'
+          + '<div class="autocomplete-item-sub">' + item.departamento + '</div>';
+        div.addEventListener('click', function() {
+          input.value = item.municipio;
+          resultsDiv.innerHTML = ''; resultsDiv.classList.remove('show');
+          buscarDestino(item.municipio, true);
+        });
+        resultsDiv.appendChild(div);
+      });
+      resultsDiv.classList.add('show');
+    }
+
+    // Live results on every keystroke — don't overwrite input value
+    buscarDestino(val, false);
+  });
+
+  input.addEventListener('keydown', function(e) {
+    var items = resultsDiv.querySelectorAll('.autocomplete-item');
+    if (e.key === 'ArrowDown') { currentFocus = Math.min(currentFocus+1, items.length-1); setActive(items, currentFocus); e.preventDefault(); }
+    else if (e.key === 'ArrowUp') { currentFocus = Math.max(currentFocus-1, 0); setActive(items, currentFocus); e.preventDefault(); }
+    else if (e.key === 'Enter') {
+      e.preventDefault();
+      if (currentFocus >= 0 && items[currentFocus]) items[currentFocus].click();
+      else { resultsDiv.innerHTML=''; resultsDiv.classList.remove('show'); }
+    }
+    else if (e.key === 'Escape') { resultsDiv.innerHTML=''; resultsDiv.classList.remove('show'); }
+  });
+
+  function setActive(items, idx) {
+    items.forEach(function(i){ i.classList.remove('active'); });
+    if (idx >= 0 && items[idx]) { items[idx].classList.add('active'); items[idx].scrollIntoView({block:'nearest'}); }
+  }
+
+  document.addEventListener('click', function(e) {
+    if (e.target !== input) { resultsDiv.innerHTML=''; resultsDiv.classList.remove('show'); }
+  });
+}
+
+// ════════════════════════════════════════
+// BÚSQUEDA DE DESTINO
+// ════════════════════════════════════════
+function buscarDestino(destino, updateInput) {
+  if (updateInput) document.getElementById('buscar-destino-input').value = destino;
+  document.getElementById('buscar-autocomplete').innerHTML = '';
+  document.getElementById('buscar-autocomplete').classList.remove('show');
+
+  const encs = DB.get();
+  const encMatch = [];
+  const queryNorm = normalize(destino);
+
+  // Is it a departamento name? → collect all its municipios
+  const deptoMunis = MUNICIPIOS_POR_DEPTO[destino] || null;
+
+  encs.forEach(enc => {
+    let rutas;
+
+    if (deptoMunis) {
+      // departamento search: use r.departamento field first (exact), then fallback to municipio matching
+      rutas = (enc.rutas || []).filter(r => {
+        // Fastest: departamento field matches directly
+        if (r.departamento && normalize(r.departamento) === normalize(destino)) return true;
+        // Fallback: municipio of the route matches any municipio in this depto
+        var rMuni = r.municipio || r.destino;
+        if (deptoMunis.some(m => normalize(m) === normalize(rMuni))) return true;
+        // Last resort: fuzzy destino match against any municipio in depto
+        return deptoMunis.some(m => municipioMatch(r.destino, m));
+      });
+    } else {
+      // Score-based search across destino + municipio + departamento
+      const queryWords = queryNorm.split(/\s+/).filter(w => w.length >= 2);
+      var scored = (enc.rutas || []).map(r => {
+        const rDest  = normalize(r.destino  || '');
+        const rMuni  = normalize(r.municipio || r.destino || '');
+        const rDepto = normalize(r.departamento || '');
+        var score = 0;
+        // Check against destino
+        if (rDest === queryNorm) score = 100;
+        else if (rDest.includes(queryNorm)) score = Math.max(score, 80);
+        else if (queryNorm.includes(rDest) && rDest.length > 3) score = Math.max(score, 70);
+        else if (queryWords.length > 1 && queryWords.every(w => rDest.includes(w))) score = Math.max(score, 60);
+        else if (queryWords.length === 1 && rDest.includes(queryWords[0])) score = Math.max(score, 50);
+        // Check against municipio (same score tiers, slightly lower priority)
+        if (rMuni !== rDest) {
+          if (rMuni === queryNorm) score = Math.max(score, 95);
+          else if (rMuni.includes(queryNorm)) score = Math.max(score, 78);
+          else if (queryNorm.includes(rMuni) && rMuni.length > 3) score = Math.max(score, 68);
+          else if (queryWords.length > 1 && queryWords.every(w => rMuni.includes(w))) score = Math.max(score, 58);
+          else if (queryWords.length === 1 && rMuni.includes(queryWords[0]) && queryWords[0].length >= 3) score = Math.max(score, 45);
+        }
+        // Check against departamento (lower priority — shows all routes of that dept)
+        if (rDepto === queryNorm) score = Math.max(score, 55);
+        else if (queryWords.every(w => rDepto.includes(w))) score = Math.max(score, 40);
+        return score > 0 ? { r, score } : null;
+      }).filter(Boolean);
+      // Keep best score tier
+      if (scored.length) {
+        var bestScore = Math.max.apply(null, scored.map(s => s.score));
+        var threshold = bestScore >= 80 ? bestScore : bestScore >= 60 ? 60 : bestScore >= 45 ? 45 : 40;
+        rutas = scored.filter(s => s.score >= threshold).map(s => s.r);
+      } else {
+        rutas = [];
+      }
+    }
+
+    if (rutas.length) encMatch.push({ enc, rutas });
+  });
+
+  const wrap   = document.getElementById('resultados-wrap');
+  const titulo = document.getElementById('resultado-titulo');
+  const tag    = document.getElementById('resultado-tag');
+  const lista  = document.getElementById('resultado-lista');
+
+  wrap.style.display = 'block';
+  titulo.textContent = deptoMunis ? '🗺 ' + destino : '📍 ' + destino;
+  // Add quick-link button to open Pedido form with this destino pre-filled
+  tag.textContent = encMatch.length
+    ? encMatch.length + ' empresa' + (encMatch.length!==1?'s':'') + ' disponible' + (encMatch.length!==1?'s':'')
+    : 'Sin cobertura';
+
+  if (!encMatch.length) {
+    tag.innerHTML = 'Sin cobertura';
+    tag.className = 'resultado-tag ninguno';
+    lista.innerHTML = `<div class="empty-state">
+      <svg width="40" height="40" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
+        <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
+      </svg>
+      <p>No hay encomendistas con cobertura para <strong style="color:var(--text2)">${esc(destino)}</strong>.</p>
+      <p style="margin-top:6px;">Agrega un encomendista con esta ruta desde el módulo de Encomendistas.</p>
+    </div>`;
+    return;
+  }
+
+  tag.className = 'resultado-tag';
+
+  window._pdMap = []; window._pdMapIdx = 0;
+  lista.innerHTML = encMatch.map(function(item) {
+    var enc = item.enc, rutas = item.rutas;
+    // Per-company theme
+    var encNorm = (enc.nombre||'').toLowerCase();
+    var theme;
+    if (encNorm.indexOf('pedidos') !== -1 || encNorm.indexOf('express') !== -1) {
+      theme = {
+        headerBg: 'background:#111318;border-bottom:2px solid #222;',
+        avatarBg: 'background:#e8e8e8;color:#111;',
+        numBg:    'background:#222;color:#aaa;',
+        chipBg:   'background:#1e1e1e;color:#999;border-color:#333;',
+        horColor: '#aaa',
+        rowHover: '#18181b',
+        borderRow:'rgba(50,50,50,0.6)'
+      };
+    } else if (encNorm.indexOf('flor') !== -1 || encNorm.indexOf('abrego') !== -1) {
+      theme = {
+        headerBg: 'background:linear-gradient(135deg,#3b1f5e,#5a2d8a);border-bottom:2px solid #7c3aed;',
+        avatarBg: 'background:rgba(255,255,255,0.18);color:#e9d5ff;',
+        numBg:    'background:rgba(124,58,237,0.25);color:#c4b5fd;',
+        chipBg:   'background:rgba(124,58,237,0.15);color:#c4b5fd;border-color:rgba(124,58,237,0.35);',
+        horColor: '#a78bfa',
+        rowHover: 'rgba(124,58,237,0.05)',
+        borderRow:'rgba(124,58,237,0.15)'
+      };
+    } else {
+      theme = {
+        headerBg: 'background:linear-gradient(135deg,rgba(79,125,255,0.15),rgba(123,94,167,0.1));border-bottom:2px solid rgba(79,125,255,0.3);',
+        avatarBg: 'background:linear-gradient(135deg,var(--accent),var(--accent2));color:#fff;',
+        numBg:    'background:rgba(79,125,255,0.15);color:#93b4ff;',
+        chipBg:   'background:rgba(79,125,255,0.1);color:#93b4ff;border-color:rgba(79,125,255,0.2);',
+        horColor: 'var(--amber)',
+        rowHover: 'rgba(79,125,255,0.04)',
+        borderRow:'rgba(42,47,74,0.4)'
+      };
+    }
+
+    var parasHtml = rutas.map(function(r, i) {
+      var diasHtml = (r.dias||[]).map(function(d){
+        return '<span class="dia-chip" style="'+theme.chipBg+'">'+esc(d)+'</span>';
+      }).join('');
+      // Format hours: prefer horaInicio/horaFin, fall back to horario string
+      var horStr = '';
+      if (r.horaInicio && r.horaFin) {
+        horStr = formatHora(r.horaInicio) + ' - ' + formatHora(r.horaFin);
+      } else if (r.horario) {
+        horStr = formatHorario(r.horario);
+      }
+      var horHtml = horStr ? '<div class="parada-horario" style="color:'+theme.horColor+';">⏰ '+esc(horStr)+'</div>' : '';
+      var notaHtml = r.nota ? '<div style="font-size:11px;color:var(--text3);margin-top:3px;font-style:italic;">⚠ '+esc(r.nota)+'</div>' : '';
+      var municipio = r.municipio || r.destino;
+      var departamento = r.departamento || '';
+      var lugarDist = (r.lugar && r.lugar !== municipio) ? r.lugar : '';
+      // Always show "Municipio, Departamento" as subtitle
+      // If destino = municipio, just show depto; if different, show municipio + depto
+      var isSubPlace = r.destino && r.destino !== municipio;
+      var muniLabel = isSubPlace
+        ? esc(municipio) + (departamento ? ', <strong>'+esc(departamento)+'</strong>' : '')
+        : (departamento ? '<strong>'+esc(departamento)+'</strong>' : '');
+      var muniLine = muniLabel
+        ? '<div style="font-size:11px;color:var(--text3);margin-top:1px;">'+muniLabel+'</div>'
+        : '';
+      return '<div class="parada-item" style="border-bottom:1px solid '+theme.borderRow+';">'
+        + '<div class="parada-num" style="'+theme.numBg+'flex-shrink:0;">'+(i+1)+'</div>'
+        + '<div class="parada-info">'
+        +   '<div class="parada-destino">'+esc(r.destino||municipio)+'</div>'
+        +   muniLine
+        +   (lugarDist ? '<div class="parada-lugar"><span>📌</span> '+esc(lugarDist)+'</div>' : '')
+        +   notaHtml
+        + '</div>'
+        + '<div class="parada-meta">'
+        +   '<div class="parada-dias">'+diasHtml+'</div>'
+        +   horHtml
+        +   '<button onclick="irAPedidoConDestino(window._pdMap['+window._pdMapIdx+'])" style="'
+        +     'margin-top:6px;padding:4px 10px;background:rgba(79,125,255,0.15);color:var(--blue-light);'
+        +     'border:1px solid rgba(79,125,255,0.3);border-radius:20px;font-size:10px;font-weight:600;'
+        +     'cursor:pointer;white-space:nowrap;font-family:DM Sans,sans-serif;">+ Crear pedido</button>'
+        +   (window._pdMap.push(r.destino||municipio) && ++window._pdMapIdx && '')
+        + '</div>'
+        + '</div>';
+    }).join('');
+
+    var telHtml = enc.telefono ? ' · 📞 '+esc(enc.telefono) : '';
+    return '<div class="ruta-result-card">'
+      + '<div class="ruta-result-header" style="'+theme.headerBg+'display:flex;align-items:center;gap:12px;padding:14px 20px;width:100%;">'
+      +   '<div class="ruta-result-avatar" style="'+theme.avatarBg+'width:36px;height:36px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-family:Syne,sans-serif;font-weight:700;font-size:13px;flex-shrink:0;">'+esc(getInitials(enc.nombre))+'</div>'
+      +   '<div style="flex:1;min-width:0;">'
+      +     '<div class="ruta-result-nombre" style="color:#fff;">'+esc(enc.nombre)+'</div>'
+      +     (telHtml ? '<div style="font-size:11px;color:rgba(255,255,255,0.45);margin-top:2px;">'+telHtml+'</div>' : '')
+      +   '</div>'
+      +   '<div style="font-size:11px;color:rgba(255,255,255,0.4);">'+rutas.length+' parada'+(rutas.length!==1?'s':'')+'</div>'
+      + '</div>'
+      + '<div class="paradas-list">'+parasHtml+'</div>'
+      + '</div>';
+  }).join('');
+}
+
+function irAPedidoConDestino(destino) {
+  navigate('pedido');  // this calls limpiarPedido() resetting the form
+  // After reset, auto-select encomienda type and fill the destino
+  setTimeout(function() {
+    // Select encomienda type automatically
+    setTipoEnvio('encomienda');
+    // Fill destino and trigger search
+    var el = document.getElementById('ped-destino-texto');
+    if (el) {
+      el.value = destino;
+      buscarEncomendistasParaDestino(true); // true = auto-select best match
+      // Scroll to the encomienda block
+      var block = document.getElementById('ped-block-encomienda');
+      if (block) block.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  }, 100);
+}
+
+function municipioMatch(a, b) {
+  const na = normalize(a), nb = normalize(b);
+  if (na === nb) return true;
+  if (na.includes(nb) || nb.includes(na)) return true;
+  // Word-level: every word (2+ chars) from query must appear in target
+  const wordsB = nb.split(/\s+/).filter(w => w.length >= 2);
+  const wordsA = na.split(/\s+/).filter(w => w.length >= 2);
+  if (wordsB.length > 0 && wordsB.every(w => na.includes(w))) return true;
+  if (wordsA.length > 0 && wordsA.every(w => nb.includes(w))) return true;
+  return false;
+}
+
+// ════════════════════════════════════════
+// ENCOMENDISTAS: Render
+// ════════════════════════════════════════
+function renderEncomendistas() {
+  const encs = DB.get();
+  const search    = normalize(document.getElementById('enc-search').value || '');
+  const dayFilter = document.getElementById('enc-filter-day').value;
+
+  const filtered = encs.filter(e => {
+    const matchText = !search ||
+      normalize(e.nombre).includes(search) ||
+      normalize(e.cobertura||'').includes(search);
+    const matchDay  = !dayFilter || (e.dias||[]).includes(dayFilter);
+    return matchText && matchDay;
+  });
+
+  const el = document.getElementById('enc-list');
+  if (!filtered.length) {
+    el.innerHTML = `<div class="empty-state">
+      <svg width="40" height="40" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
+        <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/>
+      </svg>
+      <p>${encs.length ? 'Sin resultados para esta búsqueda' : 'No hay encomendistas registrados aún'}</p>
+      ${!encs.length ? '<button class="btn btn-primary" style="margin-top:14px;" onclick="abrirModalEncomendista()">+ Agregar primero</button>' : ''}
+    </div>`;
+    return;
+  }
+
+  el.innerHTML = filtered.map(enc => {
+    const cobList = (enc.cobertura||'').split(',').map(s=>s.trim()).filter(Boolean);
+    const showCob = cobList.slice(0,6);
+    const extra   = cobList.length - 6;
+    return `<div class="enc-card">
+      <div class="enc-header">
+        <div class="enc-avatar">${esc(getInitials(enc.nombre))}</div>
+        <div style="flex:1;min-width:140px;">
+          <div class="enc-name">${esc(enc.nombre)}</div>
+          <div class="enc-phone">${esc(enc.telefono)||'Sin teléfono registrado'}</div>
+        </div>
+        <div class="enc-actions">
+          <button class="btn btn-secondary btn-sm" onclick="abrirModalEncomendista('${enc.id}')">Editar</button>
+          <button class="btn btn-danger btn-sm" onclick="eliminarEncomendista('${enc.id}')">Eliminar</button>
+        </div>
+      </div>
+      <div class="enc-body">
+        ${showCob.map(m=>`<span class="enc-tag">${esc(m)}</span>`).join('')}
+        ${extra>0 ? `<span class="enc-tag" style="background:rgba(96,104,128,0.15);color:var(--text3);">+${extra} más</span>` : ''}
+      </div>
+      <div class="enc-meta">
+        <span>📅 Días: <span>${esc((enc.dias||[]).join(', '))||'—'}</span></span>
+        ${enc.rutas ? `<span>🗺 <span>${enc.rutas.length} rutas</span></span>` : ''}
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function eliminarEncomendista(id) {
+  if (!confirm('¿Seguro que deseas eliminar este encomendista y todas sus rutas?')) return;
+  DB.set(DB.get().filter(e => e.id !== id));
+  renderEncomendistas();
+  updateBadges();
+  renderStats();
+  renderQuickTags();
+  cargarEncomendistasEnPedido();
+  toast('Encomendista eliminado');
+}
+
+// ════════════════════════════════════════
+// MODAL TABS
+// ════════════════════════════════════════
+function switchTab(tab) {
+  document.getElementById('panel-info').style.display  = tab==='info'  ? '' : 'none';
+  document.getElementById('panel-rutas').style.display = tab==='rutas' ? '' : 'none';
+  document.getElementById('tab-info').classList.toggle('active',  tab==='info');
+  document.getElementById('tab-rutas').classList.toggle('active', tab==='rutas');
+  if (tab==='rutas') renderRutasList();
+}
+
+// ════════════════════════════════════════
+// RUTAS EDITOR
+// ════════════════════════════════════════
+let editingRutas = [];
+const DIAS_SEMANA = ['Lunes','Martes','Miércoles','Jueves','Viernes','Sábado','Domingo'];
+const DIAS_SHORT  = ['Lun','Mar','Mié','Jue','Vie','Sáb','Dom'];
+
+function formatHora(t) {
+  if (!t) return '';
+  var parts = t.split(':');
+  var h = parseInt(parts[0]), m = parseInt(parts[1]||0);
+  var ampm = h >= 12 ? 'pm' : 'am';
+  var h12 = h % 12 || 12;
+  return h12 + ':' + (m < 10 ? '0'+m : m) + ampm;
+}
+
+// Normalize a legacy horario string like "9:00-10:00am" or "3:40-4:30pm"
+// to always show am/pm on BOTH sides: "9:00am - 10:00am"
+function formatHorario(horario) {
+  if (!horario) return '';
+  // Already formatted by formatHora (contains - and am/pm on both)
+  // Try to parse "H:MM-H:MMam/pm" or "H:MM am - H:MM pm" patterns
+  var s = horario.trim();
+
+  // Pattern: two times separated by - or to/a, optional am/pm at end or per time
+  // Normalize separators
+  s = s.replace(/\s*[-–]\s*/g, '-').replace(/\s+/g,' ');
+
+  // Extract suffix am/pm that applies to the whole range
+  var globalSuffix = '';
+  var sfxMatch = s.match(/(am|pm)\s*$/i);
+  if (sfxMatch) {
+    globalSuffix = sfxMatch[1].toLowerCase();
+    s = s.slice(0, s.length - sfxMatch[0].length).trim();
+  }
+
+  // Split into two time parts
+  var parts = s.split('-');
+  if (parts.length !== 2) return horario; // can't parse, return as-is
+
+  function parseTimePart(tp, fallbackSuffix) {
+    tp = tp.trim();
+    var sfx = '';
+    var sfxM = tp.match(/(am|pm)$/i);
+    if (sfxM) { sfx = sfxM[1].toLowerCase(); tp = tp.slice(0, -sfxM[0].length).trim(); }
+    else sfx = fallbackSuffix;
+
+    var colonParts = tp.split(':');
+    var hh = parseInt(colonParts[0]);
+    var mm = parseInt(colonParts[1]||0);
+    if (isNaN(hh)) return null;
+
+    // Convert to 24h for comparison, then format
+    var h24 = hh;
+    if (sfx === 'pm' && hh < 12) h24 = hh + 12;
+    if (sfx === 'am' && hh === 12) h24 = 0;
+    var ampm = h24 >= 12 ? 'pm' : 'am';
+    var h12 = h24 % 12 || 12;
+    return h12 + ':' + (mm < 10 ? '0'+mm : mm) + ampm;
+  }
+
+  var t1 = parseTimePart(parts[0], globalSuffix);
+  var t2 = parseTimePart(parts[1], globalSuffix);
+
+  if (!t1 || !t2) return horario;
+
+  // If t1 has no am/pm context yet (globalSuffix was empty and no local sfx)
+  // Infer: if t1 hour > t2 hour (e.g. 10-2) t1=am, t2=pm
+  return t1 + ' - ' + t2;
+}
+
+function lookupDepto(municipio) {
+  var mn = normalize(municipio);
+  var found = null;
+  Object.entries(MUNICIPIOS_POR_DEPTO).forEach(function(e) {
+    if (e[1].some(function(m){ return normalize(m) === mn; })) found = e[0];
+  });
+  return found;
+}
+
+function renderRutasList() {
+  const el = document.getElementById('rutas-list');
+  if (!editingRutas.length) {
+    el.innerHTML = '<div style="text-align:center;padding:32px 16px;color:var(--text3);font-size:13px;">Sin puntos configurados.<br>Haz clic en &quot;+ Agregar punto&quot; para comenzar.</div>';
+    return;
+  }
+  const muniOpts = TODOS_MUNICIPIOS.map(m => '<option value="'+esc(m.municipio)+'">').join('');
+  el.innerHTML = '<datalist id="muni-list">'+muniOpts+'</datalist>' +
+    editingRutas.map(function(r, i) {
+      const depBadge = r.departamento
+        ? '<span style="font-size:11px;color:var(--blue-light);background:rgba(79,125,255,0.1);border:1px solid rgba(79,125,255,0.2);border-radius:20px;padding:2px 9px;white-space:nowrap;">'+esc(r.departamento)+'</span>'
+        : '';
+      const dias = DIAS_SEMANA.map(function(d,di){
+        return '<span class="ruta-day-chip '+((r.dias||[]).includes(d)?'sel':'')+'" onclick="toggleRutaDia('+i+',\''+d+'\',this)">'+DIAS_SHORT[di]+'</span>';
+      }).join('');
+      return '<div class="ruta-row">'
+        // ── Header: número + nombre del destino + botón eliminar ──
+        + '<div class="ruta-row-header">'
+        +   '<div class="ruta-row-num">'+( i+1)+'</div>'
+        +   '<input class="form-input" style="flex:1;min-width:120px;font-size:13px;padding:7px 12px;font-weight:600;"'
+        +     ' value="'+esc(r.destino)+'" placeholder="Nombre del destino (ej: Metrogalerías)"'
+        +     ' oninput="editingRutas['+i+'].destino=this.value">'
+        +   '<button class="btn btn-danger btn-sm" onclick="eliminarRuta('+i+')" style="padding:5px 10px;">✕</button>'
+        + '</div>'
+        // ── Municipio + depto en una fila ──
+        + '<div style="display:flex;gap:8px;align-items:center;margin-top:8px;">'
+        +   '<div class="form-group" style="margin:0;flex:1;">'
+        +     '<label class="form-label" style="font-size:11px;">Municipio oficial</label>'
+        +     '<input class="form-input" style="font-size:13px;padding:7px 12px;" list="muni-list"'
+        +       ' value="'+esc(r.municipio||'')+'" placeholder="Selecciona o escribe el municipio"'
+        +       ' oninput="editingRutas['+i+'].municipio=this.value; var _d=lookupDepto(this.value); if(_d) editingRutas['+i+'].departamento=_d; renderRutasList();">'
+        +   '</div>'
+        +   '<div style="padding-top:18px;flex-shrink:0;">'+depBadge+'</div>'
+        + '</div>'
+        // ── Lugar + Nota ──
+        + '<div class="ruta-row-fields" style="margin-top:8px;">'
+        +   '<div class="form-group" style="margin:0;">'
+        +     '<label class="form-label" style="font-size:11px;">Lugar exacto de entrega</label>'
+        +     '<input class="form-input" style="font-size:13px;padding:7px 12px;" value="'+esc(r.lugar)+'"'
+        +       ' placeholder="Ej: Frente al parque, costado de la iglesia"'
+        +       ' oninput="editingRutas['+i+'].lugar=this.value">'
+        +   '</div>'
+        +   '<div class="form-group" style="margin:0;">'
+        +     '<label class="form-label" style="font-size:11px;">Indicación especial (opcional)</label>'
+        +     '<input class="form-input" style="font-size:13px;padding:7px 12px;" value="'+esc(r.nota||'')+'"'
+        +       ' placeholder="Ej: Preguntar por el motorista"'
+        +       ' oninput="editingRutas['+i+'].nota=this.value">'
+        +   '</div>'
+        + '</div>'
+        // ── Horas ──
+        + '<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:8px;">'
+        +   '<div class="form-group" style="margin:0;">'
+        +     '<label class="form-label" style="font-size:11px;">Hora de inicio</label>'
+        +     '<input class="form-input" type="time" style="font-size:13px;padding:7px 12px;" value="'+esc(r.horaInicio||'')+'"'
+        +       ' oninput="editingRutas['+i+'].horaInicio=this.value">'
+        +   '</div>'
+        +   '<div class="form-group" style="margin:0;">'
+        +     '<label class="form-label" style="font-size:11px;">Hora de fin</label>'
+        +     '<input class="form-input" type="time" style="font-size:13px;padding:7px 12px;" value="'+esc(r.horaFin||'')+'"'
+        +       ' oninput="editingRutas['+i+'].horaFin=this.value">'
+        +   '</div>'
+        + '</div>'
+        // ── Días ──
+        + '<div class="ruta-days-row">'
+        +   '<span style="font-size:11px;color:var(--text3);line-height:26px;margin-right:4px;">Días:</span>'
+        +   dias
+        + '</div>'
+        + '</div>';
+    }).join('');
+}
+
+function agregarRuta() {
+  editingRutas.push({ destino:'', municipio:'', nota:'', horaInicio:'', horaFin:'', dias:[], horario:'', lugar:'' });
+  renderRutasList();
+  document.getElementById('rutas-list').lastElementChild?.scrollIntoView({behavior:'smooth',block:'nearest'});
+}
+
+function eliminarRuta(i) {
+  editingRutas.splice(i,1);
+  renderRutasList();
+}
+
+function toggleRutaDia(i, dia, el) {
+  const dias = editingRutas[i].dias || [];
+  const idx  = dias.indexOf(dia);
+  if (idx===-1) { dias.push(dia); el.classList.add('sel'); }
+  else          { dias.splice(idx,1); el.classList.remove('sel'); }
+  editingRutas[i].dias = dias;
+}
+
+// ════════════════════════════════════════
+// ABRIR / GUARDAR ENCOMENDISTA
+// ════════════════════════════════════════
+function abrirModalEncomendista(id=null) {
+  editingRutas = [];
+  ['enc-edit-id','enc-nombre','enc-telefono','enc-tiempo','enc-tarifa']
+    .forEach(f => document.getElementById(f).value = '');
+  switchTab('info');
+
+  if (id) {
+    const enc = DB.get().find(e => e.id===id);
+    if (enc) {
+      document.getElementById('modal-enc-title').textContent = 'Editar Encomendista';
+      document.getElementById('enc-edit-id').value  = enc.id;
+      document.getElementById('enc-nombre').value   = enc.nombre  || '';
+      document.getElementById('enc-telefono').value = enc.telefono|| '';
+      document.getElementById('enc-tiempo').value   = enc.tiempo  || '';
+      document.getElementById('enc-tarifa').value   = enc.tarifa  || '';
+      editingRutas = (enc.rutas||[]).map(r=>({ destino:r.destino||'', municipio:r.municipio||r.destino||'', departamento:r.departamento||'', nota:r.nota||'', horaInicio:r.horaInicio||'', horaFin:r.horaFin||'', dias:[...(r.dias||[])], horario:r.horario||'', lugar:r.lugar||'' }));
+    }
+  } else {
+    document.getElementById('modal-enc-title').textContent = 'Nuevo Encomendista';
+  }
+  document.getElementById('modal-enc').classList.add('open');
+}
+
+function cerrarModal(id) { document.getElementById(id).classList.remove('open'); }
+
+function guardarEncomendista() {
+  const nombre = document.getElementById('enc-nombre').value.trim();
+  if (!nombre) { toast('Ingresa el nombre del encomendista','error'); switchTab('info'); return; }
+  if (!editingRutas.length) { toast('Agrega al menos un punto de entrega en Rutas','error'); switchTab('rutas'); return; }
+
+  const encs   = DB.get();
+  const editId = document.getElementById('enc-edit-id').value;
+  const cobertura = [...new Set(editingRutas.map(r=>r.destino).filter(Boolean))].join(',');
+  const dias      = [...new Set(editingRutas.flatMap(r=>r.dias))];
+
+  const enc = {
+    id: editId || uid(), nombre,
+    telefono: document.getElementById('enc-telefono').value.trim(),
+    cobertura, dias,
+    tiempo: document.getElementById('enc-tiempo').value.trim(),
+    tarifa: document.getElementById('enc-tarifa').value,
+    rutas:  editingRutas.map(function(r) {
+      var hi = r.horaInicio, hf = r.horaFin;
+      var horario = (hi && hf) ? formatHora(hi) + ' - ' + formatHora(hf) : r.horario || '';
+      return { destino:r.destino||r.municipio, municipio:r.municipio||r.destino, departamento:r.departamento||'', nota:r.nota||'', horaInicio:r.horaInicio||'', horaFin:r.horaFin||'', dias:r.dias||[], horario:horario, lugar:r.lugar||'' };
+    }),
+    creadoEn: editId ? (encs.find(e=>e.id===editId)||{}).creadoEn : new Date().toISOString()
+  };
+
+  if (editId) {
+    const idx = encs.findIndex(e=>e.id===editId);
+    if (idx>-1) encs[idx]=enc; else encs.push(enc);
+  } else { encs.push(enc); }
+
+  DB.set(encs);
+  cerrarModal('modal-enc');
+  renderEncomendistas();
+  updateBadges();
+  renderStats();
+  renderQuickTags();
+  toast(editId ? 'Encomendista actualizado' : 'Encomendista registrado');
+}
+
+// ════════════════════════════════════════
+// IMPORTAR CSV
+// ════════════════════════════════════════
+function importarCSV(file) {
+  if (!file) return;
+  Papa.parse(file, {
+    header: false, skipEmptyLines: true,
+    complete: (results) => {
+      let rutas = [];
+      results.data.forEach(row => {
+        if (!row[0]) return;
+        const diasBrutos = row[2] ? row[2].split(',').map(d=>d.trim()) : [];
+        rutas.push({
+          destino: row[0].trim(),
+          lugar: ((row[1]?row[1].trim()+' - ':'') + (row[4]?row[4].trim():'')).trim().replace(/^- /,''),
+          dias: diasBrutos,
+          horario: row[3] ? row[3].trim() : '',
+        });
+      });
+      if (!rutas.length) { toast('Archivo sin formato válido o vacío','error'); return; }
+      const nombreEnc = prompt('Nombre para el nuevo encomendista:', 'Encomendista CSV');
+      if (!nombreEnc) return;
+      const encs = DB.get();
+      encs.push({
+        id: uid(), nombre: nombreEnc.trim(), telefono: '',
+        cobertura: [...new Set(rutas.map(r=>r.destino).filter(Boolean))].join(','),
+        dias: [...new Set(rutas.flatMap(r=>r.dias))],
+        tiempo: '1 día', tarifa: '2.00', rutas,
+        creadoEn: new Date().toISOString()
+      });
+      DB.set(encs);
+      renderEncomendistas();
+      updateBadges();
+      renderStats();
+      renderQuickTags();
+      toast(`Importación exitosa: ${rutas.length} rutas`);
+    }
+  });
+}
+
+// ════════════════════════════════════════
+// INIT
+// ════════════════════════════════════════
+const DATA_VERSION = 'rutas-v15';
+
+// ════════════════════════════════════════
+// PEDIDO — CONFIRMACIÓN
+// ════════════════════════════════════════
+
+// State for the pedido form
+var pedState = {
+  tipo: null,          // 'encomienda' | 'repartidor'
+  encId: null,
+  rutaIdx: null,
+  fechaSeleccionada: null,
+  horario: ''
+};
+
+function setTipoEnvio(tipo) {
+  pedState.tipo = tipo;
+  // Update chips
+  document.getElementById('chip-encomienda').classList.toggle('selected', tipo==='encomienda');
+  document.getElementById('chip-repartidor').classList.toggle('selected', tipo==='repartidor');
+  // Show/hide blocks
+  (document.getElementById('ped-block-encomienda')||{style:{}}).style.display  = tipo==='encomienda'  ? '' : 'none';
+  (document.getElementById('ped-block-repartidor')||{style:{}}).style.display  = tipo==='repartidor'  ? '' : 'none';
+  // Populate municipio datalist for repartidor — AMSS only
+  if (tipo === 'repartidor') {
+    var dl = document.getElementById('muni-list-ped');
+    if (dl) {
+      // Area Metropolitana de San Salvador (AMSS) + municipios cercanos
+      var AMSS = [
+        // San Salvador (municipio)
+        'San Salvador',
+        // AMSS núcleo
+        'Soyapango', 'Ilopango', 'Ciudad Delgado', 'Cuscatancingo',
+        'Mejicanos', 'Ayutuxtepeque', 'Apopa', 'Tonacatepeque',
+        'San Martín', 'Nejapa', 'Guazapa', 'Aguilares', 'El Paisnal',
+        'San Marcos', 'Santiago Texacuangos', 'Santo Tomás',
+        'Panchimalco', 'Rosario de Mora',
+        // La Libertad — cercanos
+        'Santa Tecla', 'Antiguo Cuscatlán', 'Nuevo Cuscatlán',
+        'Huizúcar', 'Zaragoza', 'San Juan Opico', 'Colón',
+        'Ciudad Arce', 'Quezaltepeque', 'San Pablo Tacachico'
+      ];
+      // Group by departamento for display
+      var grouped = [
+        { label: 'San Salvador — AMSS', munis: [
+          'San Salvador','Soyapango','Ilopango','Ciudad Delgado','Cuscatancingo',
+          'Mejicanos','Ayutuxtepeque','Apopa','Tonacatepeque','San Martín',
+          'Nejapa','Guazapa','Aguilares','El Paisnal',
+          'San Marcos','Santiago Texacuangos','Santo Tomás','Panchimalco','Rosario de Mora'
+        ]},
+        { label: 'La Libertad — Zona Metropolitana', munis: [
+          'Santa Tecla','Antiguo Cuscatlán','Nuevo Cuscatlán',
+          'Huizúcar','Zaragoza','San Juan Opico','Colón',
+          'Ciudad Arce','Quezaltepeque','San Pablo Tacachico'
+        ]}
+      ];
+      dl.innerHTML = grouped.map(function(g) {
+        return '<optgroup label="' + g.label + '">'
+          + g.munis.map(function(m){ return '<option value="'+esc(m)+'">'; }).join('')
+          + '</optgroup>';
+      }).join('');
+    }
+    // Set min date to today
+    var fd = document.getElementById('ped-fecha-rep');
+    if (fd) fd.min = new Date().toISOString().split('T')[0];
+  }
+  previsualizarPedido();
+}
+
+function cargarEncomendistasEnPedido() { /* noop — loaded on demand */ }
+
+function buscarEncomendistasParaDestino(autoSelect) {
+  if (!document.getElementById('ped-destino-texto')) return;
+  var destino = (document.getElementById('ped-destino-texto').value || '').trim();
+  var wrap     = document.getElementById('ped-enc-wrap');
+  var lista    = document.getElementById('ped-enc-lista');
+  var selWrap  = document.getElementById('ped-enc-selected-wrap');
+  var fechasW  = document.getElementById('ped-fechas-wrap');
+
+  // Reset selection
+  pedState.encId = null; pedState.rutaIdx = null;
+  pedState.fechaSeleccionada = null;
+  selWrap.style.display  = 'none';
+  fechasW.style.display  = 'none';
+  document.getElementById('ped-fechas-lista').innerHTML = '';
+
+  if (!destino || destino.length < 2) {
+    wrap.style.display = 'none';
+    lista.innerHTML = '';
+    previsualizarPedido();
+    return;
+  }
+
+  var encs = DB.get();
+  var queryNorm  = normalize(destino);
+  var queryWords = queryNorm.split(/\s+/).filter(function(w){ return w.length >= 2; });
+  var resultados = [];
+
+  encs.forEach(function(enc) {
+    var matched = (enc.rutas||[]).map(function(r, idx) {
+      var rn = normalize(r.destino);
+      var score = 0;
+      if (rn === queryNorm) score = 100;
+      else if (rn.includes(queryNorm)) score = 80;
+      else if (queryNorm.includes(rn) && rn.length > 3) score = 70;
+      else if (queryWords.length > 1 && queryWords.every(function(w){ return rn.includes(w); })) score = 60;
+      else if (queryWords.some(function(w){ return rn.includes(w) && w.length >= 3; })) score = 40;
+      return score > 0 ? { enc:enc, ruta:r, rutaIdx:idx, score:score } : null;
+    }).filter(Boolean);
+    if (matched.length) {
+      var best = Math.max.apply(null, matched.map(function(m){ return m.score; }));
+      var thr  = best >= 70 ? best : best >= 60 ? 60 : 40;
+      matched.filter(function(m){ return m.score >= thr; }).forEach(function(m){ resultados.push(m); });
+    }
+  });
+
+  if (!resultados.length) {
+    wrap.style.display = 'block';
+    lista.innerHTML = '<div style="font-size:13px;color:var(--text3);padding:10px 0;">Sin empresas con cobertura para este destino.</div>';
+    previsualizarPedido(); return;
+  }
+
+  wrap.style.display = 'block';
+  window._pedEncs = resultados; // store for seleccionarEncPedido
+
+  lista.innerHTML = resultados.map(function(m, i) {
+    var hor = m.ruta.horaInicio && m.ruta.horaFin
+      ? formatHora(m.ruta.horaInicio)+' - '+formatHora(m.ruta.horaFin)
+      : formatHorario(m.ruta.horario||'');
+    var dias = (m.ruta.dias||[]).join(' · ');
+    var isFlor = m.enc.nombre.toLowerCase().indexOf('flor') !== -1;
+    var isPed  = m.enc.nombre.toLowerCase().indexOf('pedidos') !== -1 || m.enc.nombre.toLowerCase().indexOf('express') !== -1;
+    var accent = isFlor ? '#7c3aed' : isPed ? '#555' : 'var(--accent)';
+    return '<div class="rec-enc-item" id="ped-enc-opt-'+i+'" onclick="seleccionarEncPedido('+i+')" style="'
+      +'display:flex;align-items:flex-start;gap:12px;padding:14px 16px;'
+      +'border-radius:var(--radius-sm);border:2px solid var(--border);'
+      +'background:var(--surface);cursor:pointer;transition:all 0.15s;">'
+      +'<div style="width:38px;height:38px;border-radius:8px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-family:Syne,sans-serif;font-weight:700;font-size:12px;color:#fff;background:'+accent+';">'+esc(getInitials(m.enc.nombre))+'</div>'
+      +'<div style="flex:1;min-width:0;">'
+      +  '<div style="font-weight:600;font-size:13px;color:var(--text);">'+esc(m.enc.nombre)+'</div>'
+      +  '<div style="font-size:12px;color:var(--accent);margin-top:2px;">'+esc(m.ruta.destino)+'</div>'
+      +  (m.ruta.lugar ? '<div style="font-size:11px;color:var(--text3);margin-top:2px;">📌 '+esc(m.ruta.lugar)+'</div>' : '')
+      +  '<div style="font-size:11px;color:var(--text3);margin-top:2px;">📅 '+esc(dias)+(hor?' &nbsp;⏰ '+esc(hor):'')+'</div>'
+      +'</div>'
+
+      +'</div>';
+  }).join('');
+  previsualizarPedido();
+  // Auto-select if requested (e.g. coming from "+ Crear pedido" button)
+  if (autoSelect && resultados.length > 0) {
+    // Pick the result with highest score (already sorted)
+    var bestIdx = 0;
+    var bestScore = resultados[0].score;
+    for (var bi = 1; bi < resultados.length; bi++) {
+      if (resultados[bi].score > bestScore) { bestScore = resultados[bi].score; bestIdx = bi; }
+    }
+    seleccionarEncPedido(bestIdx);
+  }
+}
+
+function seleccionarEncPedido(idx) {
+  var m = (window._pedEncs||[])[idx];
+  if (!m) return;
+  pedState.encId   = m.enc.id;
+  pedState.rutaIdx = m.rutaIdx;
+  pedState.fechaSeleccionada = null;
+
+  // Hide list, show selected card
+  (document.getElementById('ped-enc-wrap')||{style:{}}).style.display = 'none';
+  var selWrap = document.getElementById('ped-enc-selected-wrap');
+  var selCard = document.getElementById('ped-enc-selected-card');
+  var hor = m.ruta.horaInicio && m.ruta.horaFin
+    ? formatHora(m.ruta.horaInicio)+' - '+formatHora(m.ruta.horaFin)
+    : formatHorario(m.ruta.horario||'');
+  var isFlor = m.enc.nombre.toLowerCase().indexOf('flor') !== -1;
+  var isPed  = m.enc.nombre.toLowerCase().indexOf('pedidos') !== -1;
+  var accent = isFlor ? '#7c3aed' : isPed ? '#555' : 'var(--accent)';
+  var dias = (m.ruta.dias||[]);
+  var diasChips = dias.map(function(d){
+    return '<span style="font-size:10px;font-weight:600;padding:3px 8px;border-radius:20px;background:rgba(79,125,255,0.15);color:var(--blue-light);border:1px solid rgba(79,125,255,0.25);">'+esc(d)+'</span>';
+  }).join('');
+  selCard.innerHTML = '<div style="display:flex;align-items:flex-start;gap:12px;padding:14px 16px;border-radius:var(--radius-sm);border:2px solid var(--accent);background:rgba(79,125,255,0.06);">'
+    +'<div style="width:38px;height:38px;border-radius:8px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-family:Syne,sans-serif;font-weight:700;font-size:13px;color:#fff;background:'+accent+';">'+esc(getInitials(m.enc.nombre))+'</div>'
+    +'<div style="flex:1;min-width:0;">'
+    +  '<div style="font-weight:700;font-size:14px;color:var(--text);margin-bottom:3px;">'+esc(m.enc.nombre)+'</div>'
+    +  '<div style="font-size:12px;color:var(--accent);margin-bottom:4px;">'+esc(m.ruta.destino)+'</div>'
+    +  (m.ruta.lugar ? '<div style="font-size:11px;color:var(--text3);margin-bottom:6px;">📌 '+esc(m.ruta.lugar)+'</div>' : '')
+    +  '<div style="display:flex;flex-wrap:wrap;gap:4px;margin-bottom:'+(hor?'6':'0')+'px;">'+diasChips+'</div>'
+    +  (hor ? '<div style="font-size:12px;color:var(--amber);font-weight:500;">⏰ '+esc(hor)+'</div>' : '')
+    +'</div>'
+    +'</div>';
+  selWrap.style.display = '';
+  // Show dates
+  mostrarFechasDisponibles(m.enc, m.rutaIdx);
+  previsualizarPedido();
+}
+
+function cambiarEncomienda() {
+  pedState.encId = null; pedState.rutaIdx = null;
+  pedState.fechaSeleccionada = null;
+  (document.getElementById('ped-enc-selected-wrap')||{style:{}}).style.display = 'none';
+  (document.getElementById('ped-fechas-wrap')||{style:{}}).style.display = 'none';
+  document.getElementById('ped-fechas-lista').innerHTML = '';
+  (document.getElementById('ped-enc-wrap')||{style:{}}).style.display = 'block';
+  previsualizarPedido();
+}
+
+function mostrarFechasDisponibles(enc, rutaIdx) {
+  var ruta = enc && enc.rutas ? enc.rutas[rutaIdx] : null;
+  var wrap = document.getElementById('ped-fechas-wrap');
+  var lista = document.getElementById('ped-fechas-lista');
+  if (!ruta || !ruta.dias || !ruta.dias.length) { wrap.style.display = 'none'; return; }
+  wrap.style.display = '';
+  pedState.horario = ruta.horaInicio && ruta.horaFin
+    ? formatHora(ruta.horaInicio)+' - '+formatHora(ruta.horaFin)
+    : formatHorario(ruta.horario||'');
+  var dayNames = ['Domingo','Lunes','Martes','Miércoles','Jueves','Viernes','Sábado'];
+  var months   = ['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
+  var today = new Date();
+  var dates = [];
+  for (var off = 1; off <= 56 && dates.length < 8; off++) {
+    var d = new Date(today); d.setDate(today.getDate()+off);
+    if (ruta.dias.indexOf(dayNames[d.getDay()]) !== -1)
+      dates.push(dayNames[d.getDay()]+' '+d.getDate()+' de '+months[d.getMonth()]);
+  }
+  lista.innerHTML = dates.map(function(label) {
+    return '<span class="fecha-chip" onclick="seleccionarFecha(this)" style="'
+      +'padding:8px 14px;border-radius:var(--radius-sm);border:1px solid var(--border2);'
+      +'background:var(--bg3);font-size:13px;font-weight:500;cursor:pointer;'
+      +'color:var(--text2);transition:all 0.12s;white-space:nowrap;">'+label+'</span>';
+  }).join('');
+}
+
+function seleccionarFecha(el) {
+  document.querySelectorAll('.fecha-chip').forEach(function(c) {
+    c.style.background = 'var(--bg3)'; c.style.borderColor = 'var(--border2)';
+    c.style.color = 'var(--text2)'; c.style.fontWeight = '500';
+  });
+  el.style.background = 'rgba(79,125,255,0.15)'; el.style.borderColor = 'var(--accent)';
+  el.style.color = 'var(--blue-light)'; el.style.fontWeight = '600';
+  pedState.fechaSeleccionada = el.textContent.trim();
+  previsualizarPedido();
+}
+
+
+function fallbackCopy(text, cb) {
+  var ta = document.createElement('textarea');
+  ta.value = text; ta.style.cssText = 'position:fixed;top:0;left:0;opacity:0;';
+  document.body.appendChild(ta); ta.focus(); ta.select();
+  try { document.execCommand('copy'); cb(); } catch(e) { toast('No se pudo copiar','error'); }
+  document.body.removeChild(ta);
+}
+
+function previsualizarPedido() {
+  if (!document.getElementById('ped-cliente')) return;
+  var cliente  = (document.getElementById('ped-cliente').value||'').trim();
+  var contacto = (document.getElementById('ped-contacto').value||'').trim();
+  var articulo = (document.getElementById('ped-articulo').value||'').trim();
+  var talla    = (document.getElementById('ped-talla').value||'').trim();
+  var color    = (document.getElementById('ped-color').value||'').trim();
+  var precio   = parseFloat(document.getElementById('ped-precio').value)||0;
+  var envio    = parseFloat(document.getElementById('ped-envio').value)||0;
+  var notas    = (document.getElementById('ped-notas').value||'').trim();
+  var total    = precio + envio;
+
+  // Build artículo line: "New Balance 530 - Talla 8 - Color Blanco"
+  var artParts = [articulo];
+  if (talla) artParts.push('Talla ' + talla);
+  if (color) artParts.push('Color ' + color);
+  var artFull = artParts.join(' - ');
+
+  var el = document.getElementById('ped-preview');
+  var encNombre = '', destino = '', diaEntrega = '', lugar = '';
+
+  if (pedState.tipo === 'encomienda' && pedState.encId) {
+    var enc = DB.get().find(function(e){ return e.id === pedState.encId; });
+    if (enc) {
+      encNombre = enc.nombre;
+      var ruta = enc.rutas && pedState.rutaIdx !== null ? enc.rutas[pedState.rutaIdx] : null;
+      if (ruta) { destino = ruta.destino; lugar = ruta.lugar || ''; }
+    }
+    if (pedState.fechaSeleccionada)
+      diaEntrega = pedState.fechaSeleccionada + (pedState.horario ? ', '+pedState.horario : '');
+  } else if (pedState.tipo === 'repartidor') {
+    encNombre = 'Repartidor local';
+    var dir  = (document.getElementById('ped-dir').value||'').trim();
+    var muni = (document.getElementById('ped-muni').value||'').trim();
+    destino  = dir + (muni ? ', '+muni : '');
+    var fRep = document.getElementById('ped-fecha-rep').value;
+    var hi   = document.getElementById('ped-hora-inicio').value;
+    var hf   = document.getElementById('ped-hora-fin').value;
+    if (fRep) {
+      var d = new Date(fRep+'T12:00:00');
+      var dn = ['Domingo','Lunes','Martes','Miércoles','Jueves','Viernes','Sábado'];
+      var mn = ['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
+      diaEntrega = dn[d.getDay()]+' '+d.getDate()+' de '+mn[d.getMonth()];
+    }
+    if (hi && hf) diaEntrega += (diaEntrega ? ', ' : '') + formatHora(hi)+' - '+formatHora(hf);
+  }
+
+  if (!cliente && !artFull) {
+    el.textContent = 'Completa el formulario para ver la confirmación...'; return;
+  }
+
+  var destinoLine = destino;
+  if (lugar && lugar !== destino) destinoLine = destino + ' (' + lugar + ')';
+
+  var lines = [];
+  if (cliente)     lines.push('Cliente: '+cliente);
+  if (contacto)    lines.push('Contacto: '+contacto);
+  if (artFull)     lines.push('Artículo: '+artFull);
+  if (notas)       lines.push('Notas: '+notas);
+  if (encNombre)   lines.push('Envío: '+encNombre);
+  if (destinoLine) lines.push('Destino: '+destinoLine);
+  if (diaEntrega)  lines.push('Día de entrega: '+diaEntrega);
+  if (precio > 0 || envio > 0) {
+    var ts = '$'+precio.toFixed(2);
+    if (envio > 0) ts += ' + $'+envio.toFixed(2)+' (Envío) = $'+total.toFixed(2);
+    lines.push('Total: '+ts);
+  }
+  el.textContent = lines.join('\n');
+}
+
+function copiarConfirmacion() {
+  if (!document.getElementById('ped-preview')) return;
+  var texto = document.getElementById('ped-preview').textContent;
+  if (!texto || texto.indexOf('Completa') === 0) { toast('Completa el formulario primero','error'); return; }
+  function showOk() {
+    toast('¡Confirmación copiada!');
+    var ok = document.getElementById('ped-copy-ok');
+    if (ok) { ok.style.display='block'; setTimeout(function(){ ok.style.display='none'; },3000); }
+  }
+  try {
+    if (navigator.clipboard && window.isSecureContext) {
+      navigator.clipboard.writeText(texto).then(showOk).catch(function(){ fallbackCopy(texto, showOk); });
+    } else { fallbackCopy(texto, showOk); }
+  } catch(e) { fallbackCopy(texto, showOk); }
+}
+
+function limpiarPedido() {
+  if (!document.getElementById('ped-cliente')) return;
+  ['ped-cliente','ped-contacto','ped-articulo','ped-talla','ped-color','ped-notas',
+   'ped-destino-texto','ped-dir','ped-muni','ped-fecha-rep','ped-hora-inicio','ped-hora-fin']
+    .forEach(function(id){ var e=document.getElementById(id); if(e) e.value=''; });
+  var pp = document.getElementById('ped-precio'); if(pp) pp.value='';
+  var pe = document.getElementById('ped-envio');  if(pe) pe.value='3';
+  var ids = ['ped-enc-wrap','ped-enc-selected-wrap','ped-fechas-wrap'];
+  ids.forEach(function(id){ var e=document.getElementById(id); if(e) e.style.display='none'; });
+  var fl = document.getElementById('ped-fechas-lista'); if(fl) fl.innerHTML='';
+  var el2 = document.getElementById('ped-enc-lista'); if(el2) el2.innerHTML='';
+  pedState.encId=null; pedState.rutaIdx=null;
+  pedState.fechaSeleccionada=null; pedState.horario=''; pedState.tipo=null;
+  var ce = document.getElementById('chip-encomienda'); if(ce) ce.classList.remove('selected');
+  var cr = document.getElementById('chip-repartidor'); if(cr) cr.classList.remove('selected');
+  var be = document.getElementById('ped-block-encomienda'); if(be) be.style.display='none';
+  var br = document.getElementById('ped-block-repartidor'); if(br) br.style.display='none';
+  previsualizarPedido();
+}
+
+
+
+// ════════════════════════════════════════
+// INIT
+// ════════════════════════════════════════
+// DATA_VERSION defined above
+
+// INIT
+// ════════════════════════════════════════
+// DATA_VERSION defined above
+
+// ════════════════════════════════════════
+// PEDIDO — CONFIRMACIÓN
+// ════════════════════════════════════════
+
+
+
+
+
+
+function formatFechaProxima(dias) {
+  // Find next occurrence of any of the given days
+  if (!dias || !dias.length) return '';
+  var dayNames = ['Domingo','Lunes','Martes','Miércoles','Jueves','Viernes','Sábado'];
+  var today = new Date();
+  for (var offset = 1; offset <= 14; offset++) {
+    var d = new Date(today);
+    d.setDate(today.getDate() + offset);
+    var dayName = dayNames[d.getDay()];
+    if (dias.indexOf(dayName) !== -1) {
+      var months = ['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
+      return dayName + ' ' + d.getDate() + ' de ' + months[d.getMonth()];
+    }
+  }
+  return dias[0];
+}
+
+
+
+
+function init() {
+  applyTheme();
+
+  // Fecha en topbar
+  const now = new Date();
+  const dateEl = document.getElementById('topbar-date');
+  if (dateEl) dateEl.textContent = now.toLocaleDateString('es-SV', {
+    weekday:'long', year:'numeric', month:'long', day:'numeric'
+  });
+
+  // Reset de versión si cambió
+  if (localStorage.getItem('sv_data_version') !== DATA_VERSION) {
+    localStorage.removeItem('sv_encomendistas');
+    localStorage.setItem('sv_data_version', DATA_VERSION);
+  }
+
+  // Precarga de datos demo si está vacío
+  if (!DB.get().length) {
+    const RUTAS_FLOR = [
+      // ── Agencias fijas ──
+      { destino:'San Marcos Casillero', municipio:'San Marcos', departamento:'San Salvador', dias:['Lunes','Martes','Miércoles','Jueves','Viernes','Sábado','Domingo'], horario:'9am - 7pm', lugar:'Lomas de San Carlos, casa 10' },
+      { destino:'Metrogalerías', municipio:'San Salvador', departamento:'San Salvador', dias:['Martes','Viernes'], horario:'9-11am y 12-3pm', lugar:'Local 3-14' },
+      { destino:'Metrogalerías', municipio:'San Salvador', departamento:'San Salvador', dias:['Miércoles','Sábado'], horario:'8am - 1pm', lugar:'Local 3-14' },
+      // ── Lunes ──
+      { destino:'Tonacatepeque', municipio:'Tonacatepeque', departamento:'San Salvador', dias:['Lunes','Jueves'], horario:'8:45-9:30am', lugar:'Frente a la iglesia' },
+      { destino:'Guazapa', municipio:'Guazapa', departamento:'San Salvador', dias:['Lunes','Jueves'], horario:'10:10-10:35am', lugar:'Parque, costado letras' },
+      { destino:'Aguilares', municipio:'Aguilares', departamento:'San Salvador', dias:['Lunes','Jueves'], horario:'11:15-11:40am', lugar:'Gas. Texaco, frente a Farm. Brasil' },
+      { destino:'San Pablo Tacachico', municipio:'San Pablo Tacachico', departamento:'La Libertad', dias:['Lunes','Viernes'], horario:'1:30-2:00pm', lugar:'Parque frente a la Alcaldía' },
+      { destino:'Opico pueblo', municipio:'San Juan Opico', departamento:'La Libertad', dias:['Lunes','Viernes'], horario:'2:45-3:15pm', lugar:'Parque de las letras' },
+      { destino:'Ciudad Arce', municipio:'Ciudad Arce', departamento:'La Libertad', dias:['Lunes','Viernes'], horario:'4:00-4:30pm', lugar:'Polideportivo frente a Prado' },
+      // ── Martes (y Viernes para Norte) ──
+      { destino:'Quezaltepeque', municipio:'Quezaltepeque', departamento:'La Libertad', dias:['Martes','Viernes'], horario:'9:45-10:15am', lugar:'Bancas del parque por Le Café' },
+      { destino:'Apopa Plaza Mundo', municipio:'Apopa', departamento:'San Salvador', dias:['Martes','Viernes'], horario:'11:00-11:30am', lugar:'Gradas, frente a gasolinera uno' },
+      // ── Miércoles / Sábado — Ruta Metro ──
+      { destino:'Zacamil', municipio:'Mejicanos', departamento:'San Salvador', dias:['Miércoles','Sábado'], horario:'1:30-2:00pm', lugar:'Afuera C.C. por pasarela' },
+      { destino:'Ciudad Delgado', municipio:'Ciudad Delgado', departamento:'San Salvador', dias:['Miércoles','Sábado'], horario:'2:10-2:40pm', lugar:'Frente a chivo wallet' },
+      { destino:'Ayutuxtepeque', municipio:'Ayutuxtepeque', departamento:'San Salvador', dias:['Miércoles','Sábado'], horario:'2:30-3:00pm', lugar:'Frente a la alcaldía' },
+      { destino:'Mejicanos', municipio:'Mejicanos', departamento:'San Salvador', dias:['Miércoles','Sábado'], horario:'3:30-4:00pm', lugar:'Frente a la alcaldía' },
+      { destino:'Nejapa', municipio:'Nejapa', departamento:'San Salvador', dias:['Miércoles','Sábado'], horario:'3:30-4:00pm', lugar:'Parque central' },
+      { destino:'Cuscatancingo', municipio:'Cuscatancingo', departamento:'San Salvador', dias:['Miércoles','Sábado'], horario:'4:30-5:00pm', lugar:'Frente a la alcaldía por pizza Siciliana' },
+      { destino:'Apopa Centro', municipio:'Apopa', departamento:'San Salvador', dias:['Miércoles','Sábado'], horario:'5:30-6:00pm', lugar:'A un costado del parque' },
+      // ── Miércoles / Sábado — Ruta Soya ──
+      { destino:'Plaza Mundo Soyapango', municipio:'Soyapango', departamento:'San Salvador', dias:['Miércoles','Sábado'], horario:'1:30-2:00pm', lugar:'Gasolinera Texaco' },
+      { destino:'San Martín', municipio:'San Martín', departamento:'San Salvador', dias:['Miércoles','Sábado'], horario:'2:15-2:50pm', lugar:'Parque frente a la alcaldía' },
+      { destino:'Unicentro Soyapango', municipio:'Soyapango', departamento:'San Salvador', dias:['Miércoles','Sábado'], horario:'2:30-3:00pm', lugar:'En la placita' },
+      { destino:'San Jacinto', municipio:'San Salvador', departamento:'San Salvador', dias:['Miércoles','Sábado'], horario:'2:45-3:15pm', lugar:'A un costado de la plaza' },
+      { destino:'Altavista', municipio:'Soyapango', departamento:'San Salvador', dias:['Miércoles','Sábado'], horario:'3:30-4:00pm', lugar:'Afuera del Rosario' },
+      { destino:'Cojutepeque', municipio:'Cojutepeque', departamento:'Cuscatlán', dias:['Miércoles','Sábado'], horario:'3:40-4:30pm', lugar:'Costado de Chivo Wallet' },
+      { destino:'San Marcos Centro', municipio:'San Marcos', departamento:'San Salvador', dias:['Miércoles','Sábado'], horario:'3:45-4:10pm', lugar:'Frente a la alcaldía' },
+      { destino:'San Bartolo', municipio:'Ilopango', departamento:'San Salvador', dias:['Miércoles','Sábado'], horario:'4:20-4:40pm', lugar:'Costado Maxxi Despensa' },
+      { destino:'San Marcos Encuentro', municipio:'San Marcos', departamento:'San Salvador', dias:['Miércoles','Sábado'], horario:'4:45-5:15pm', lugar:'Rótulo Papa Johns' },
+      { destino:'Ilobasco', municipio:'Ilobasco', departamento:'Cabañas', dias:['Miércoles','Sábado'], horario:'5:20-5:50pm', lugar:'Parque por Chivo Wallet' },
+      // ── Miércoles / Sábado — Ruta Occidente ──
+      { destino:'Lourdes Metrocentro', municipio:'Colón', departamento:'La Libertad', dias:['Miércoles','Sábado'], horario:'2:30-3:15pm', lugar:'Afuera del C.C.' },
+      { destino:'Armenia', municipio:'Armenia', departamento:'Sonsonate', dias:['Miércoles','Sábado'], horario:'2:30-3:00pm', lugar:'Frente a la iglesia' },
+      { destino:'Sonsonate Centro', municipio:'Sonsonate', departamento:'Sonsonate', dias:['Miércoles','Sábado'], horario:'3:45-4:15pm', lugar:'Frente a China Work' },
+      { destino:'El Congo', municipio:'El Congo', departamento:'Santa Ana', dias:['Miércoles','Sábado'], horario:'4:00-4:30pm', lugar:'Costado puente del parque' },
+      { destino:'Sonsonate Metrocentro', municipio:'Sonsonate', departamento:'Sonsonate', dias:['Miércoles','Sábado'], horario:'4:45-5:15pm', lugar:'Por el Burger King' },
+      { destino:'Santa Ana Metrocentro', municipio:'Santa Ana', departamento:'Santa Ana', dias:['Miércoles','Sábado'], horario:"5:00-6:00pm", lugar:"Afuera del Wendy's" },
+      // ── Sábado extra — Ruta Occidente ──
+      { destino:'Izalco', municipio:'Izalco', departamento:'Sonsonate', dias:['Sábado'], horario:'2:50-3:15pm', lugar:'En el Parque' },
+      // ── Jueves — Ruta Costa ──
+      { destino:'Zaragoza', municipio:'Zaragoza', departamento:'La Libertad', dias:['Jueves'], horario:'11:00-11:30am', lugar:'Afuera del C.C.' },
+      { destino:'Puerto de la Libertad', municipio:'La Libertad', departamento:'La Libertad', dias:['Jueves'], horario:'12:30-1:00pm', lugar:'En la chivo del parque' },
+      // ── Jueves / Domingo — Ruta La Paz ──
+      { destino:'Rosario de la Paz', municipio:'El Rosario', departamento:'La Paz', dias:['Jueves','Domingo'], horario:'10:20-10:45am', lugar:'Parque por las letras' },
+      { destino:'Santiago Nonualco', municipio:'Santiago Nonualco', departamento:'La Paz', dias:['Jueves','Domingo'], horario:'10:20-11:50am', lugar:'Frente tienda Hernandez' },
+      { destino:'Zacatecoluca', municipio:'Zacatecoluca', departamento:'La Paz', dias:['Jueves','Domingo'], horario:'1:10-1:40pm', lugar:'A un costado Pizza Hut' },
+      { destino:'San Marcos Lempa', municipio:'Jiquilisco', departamento:'Usulután', dias:['Jueves'], horario:'4:10-4:25pm', lugar:'Pasarela frente a neveria' },
+      // ── Jueves / Domingo — Ruta San Vicente ──
+      { destino:'San Vicente', municipio:'San Vicente', departamento:'San Vicente', dias:['Jueves','Domingo'], horario:'5:25-5:50pm', lugar:'Davivienda frente a Curacao' },
+      // ── Jueves / Domingo — Ruta Oriente ──
+      { destino:'Berlín', municipio:'Berlín', departamento:'Usulután', dias:['Jueves','Domingo'], horario:'8:00-8:25am', lugar:'Costado iglesia' },
+      { destino:'Santiago de María', municipio:'Santiago de María', departamento:'Usulután', dias:['Jueves','Domingo'], horario:'8:55-9:25am', lugar:'Frente a la iglesia' },
+      { destino:'San Miguel Centro', municipio:'San Miguel', departamento:'San Miguel', dias:['Jueves','Domingo'], horario:'10:30-11:30am', lugar:'Pasillo alcaldía' },
+      { destino:'San Miguel Metrocentro', municipio:'San Miguel', departamento:'San Miguel', dias:['Jueves','Domingo'], horario:'12:00-12:20pm', lugar:'Frente farmacia la buena' },
+      { destino:'El Tránsito San Miguel', municipio:'El Tránsito', departamento:'San Miguel', dias:['Jueves','Domingo'], horario:'1:10-1:30pm', lugar:'Parque central' },
+      { destino:'Usulután', municipio:'Usulután', departamento:'Usulután', dias:['Jueves','Domingo'], horario:'2:00-2:45pm', lugar:'Bancas frente alcaldía' },
+      { destino:'Jiquilisco', municipio:'Jiquilisco', departamento:'Usulután', dias:['Jueves','Domingo'], horario:'3:15-3:45pm', lugar:'Costado del parque' },
+      // ── Jueves / Domingo — Ruta Occidente ──
+      { destino:'Ahuachapán', municipio:'Ahuachapán', departamento:'Ahuachapán', dias:['Jueves','Domingo'], horario:'9:00-10:00am', lugar:'Escuela Isidro Menéndez' },
+      { destino:'Atiquizaya', municipio:'Atiquizaya', departamento:'Ahuachapán', dias:['Jueves','Domingo'], horario:'10:30-11:00am', lugar:'Frente a la alcaldía' },
+      { destino:'El Refugio', municipio:'El Refugio', departamento:'Ahuachapán', dias:['Jueves','Domingo'], horario:'11:30-12:00pm', lugar:'Frente a los juzgados' },
+      { destino:'Chalchuapa', municipio:'Chalchuapa', departamento:'Santa Ana', dias:['Jueves','Domingo'], horario:'1:00-1:30pm', lugar:'Por las letras' },
+      { destino:'Ciudad Real', municipio:'San Juan Opico', departamento:'La Libertad', dias:['Jueves','Domingo'], horario:'2:00-2:30pm', lugar:'Gasolinera Uno' },
+      { destino:'Candelaria de la Frontera', municipio:'Candelaria de la Frontera', departamento:'Santa Ana', dias:['Jueves','Domingo'], horario:'3:30-4:00pm', lugar:'En el triángulo' },
+      // ── Domingo extras ──
+      { destino:'Zaragoza', municipio:'Zaragoza', departamento:'La Libertad', dias:['Domingo'], horario:'1:30-2:00pm', lugar:'Afuera del centro comercial' },
+      { destino:'Puerto de la Libertad', municipio:'La Libertad', departamento:'La Libertad', dias:['Domingo'], horario:'2:45-3:15pm', lugar:'En la chivo del parque' },
+      { destino:'Tecoluca', municipio:'Tecoluca', departamento:'San Vicente', dias:['Domingo'], horario:'4:50-5:05pm', lugar:'Frente a las letras' }
+    ];
+
+    const RUTAS_EXPRESS = [
+      // ── Recogidas Lunes / Jueves ──
+      { destino:'Cacaopera', municipio:'Cacaopera', departamento:'Morazán', dias:['Lunes','Jueves'], horario:'8:00-8:30am', lugar:'Parque Central' },
+      { destino:'Chirilagua', municipio:'Chirilagua', departamento:'San Miguel', dias:['Lunes','Jueves'], horario:'8:00-8:45am', lugar:'Parque central' },
+      { destino:'Coatepeque', municipio:'Coatepeque', departamento:'Santa Ana', dias:['Lunes','Jueves'], horario:'8:00-9:00am', lugar:'Parque frente a Acacespsa' },
+      { destino:'Tacachico', municipio:'San Pablo Tacachico', departamento:'La Libertad', dias:['Lunes','Jueves'], horario:'8:00-9:00am', lugar:'Parque frente a Alcaldía' },
+      { destino:'Los Naranjos', municipio:'Juayúa', departamento:'Sonsonate', dias:['Lunes','Jueves'], horario:'8:30-9:00am', lugar:'Afuera de Iglesia de Mormones, frente a puesto PNC y Gas UNO' },
+      { destino:'Ilopango', municipio:'Ilopango', departamento:'San Salvador', dias:['Lunes','Jueves'], horario:'8:30-9:00am', lugar:'Fte. a escuela Fabio Castillo' },
+      { destino:'San Rafael Obrajuelos', municipio:'San Rafael Obrajuelo', departamento:'La Paz', dias:['Lunes','Jueves'], horario:'9:45-10:15am', lugar:'Frente a Iglesia Católica' },
+      { destino:'El Congo', municipio:'El Congo', departamento:'Santa Ana', dias:['Lunes','Jueves'], horario:'9:30am-12pm', lugar:'Local de Entrega (solo en horario de entrega)' },
+      { destino:'Soyapango - Plaza Mundo', municipio:'Soyapango', departamento:'San Salvador', dias:['Lunes','Jueves'], horario:'10:00-11:00am', lugar:'Gasolinera Texaco salida de plaza mundo' },
+      { destino:'Intipuca', municipio:'Intipucá', departamento:'La Unión', dias:['Lunes','Jueves'], horario:'10:00-10:30am', lugar:'Parque fte a iglesia' },
+      { destino:'Ciudad Marsella', municipio:'Soyapango', departamento:'San Salvador', dias:['Lunes','Jueves'], horario:'10:20-11:00am', lugar:'Parada de buses' },
+      { destino:'Soyapango - Unicentro', municipio:'Soyapango', departamento:'San Salvador', dias:['Lunes','Jueves'], horario:'11:45am-12:45pm', lugar:'Sobre calle la fuente / fte a food court' },
+      { destino:'Ciudad Versalles', municipio:'San Juan Opico', departamento:'La Libertad', dias:['Lunes','Jueves'], horario:'11:20am-12:00pm', lugar:'Entrada Vehicular Gasolinera UNO' },
+      { destino:'Conchagua', municipio:'Conchagua', departamento:'La Unión', dias:['Lunes','Jueves'], horario:'11:20-11:50am', lugar:'Kiosko del parque frente a juzgado' },
+      { destino:'Santa Elena', municipio:'Santa Elena', departamento:'Usulután', dias:['Lunes','Jueves'], horario:'11:30am-12:00pm', lugar:'Frente a Iglesia' },
+      { destino:'Tecoluca', municipio:'Tecoluca', departamento:'San Vicente', dias:['Lunes','Jueves'], horario:'11:30am-12:00pm', lugar:'Parque Central' },
+      { destino:'Desvio de Opico', municipio:'San Juan Opico', departamento:'La Libertad', dias:['Lunes','Jueves'], horario:'12:15-1:00pm', lugar:'Gasolinera UNO - Parada de buses' },
+      { destino:'Ateos', municipio:'San Juan Opico', departamento:'La Libertad', dias:['Lunes','Jueves'], horario:'12:30-1:00pm', lugar:'Gasolinera Puma' },
+      { destino:'El Carmen (La Unión)', municipio:'El Carmen', departamento:'La Unión', dias:['Lunes','Jueves'], horario:'12:30-1:00pm', lugar:'Parque el carmen' },
+      { destino:'Concepción Batres', municipio:'Concepción Batres', departamento:'Usulután', dias:['Lunes','Jueves'], horario:'12:25-12:45pm', lugar:'En el parque municipal' },
+      { destino:'Apaneca', municipio:'Apaneca', departamento:'Ahuachapán', dias:['Lunes','Jueves'], horario:'12:45-1:15pm', lugar:'Parque frente a plaza turística' },
+      { destino:'Ataco', municipio:'Concepción de Ataco', departamento:'Ahuachapán', dias:['Lunes','Jueves'], horario:'1:40-2:00pm', lugar:'Parque central' },
+      { destino:'Dolores', municipio:'Dolores', departamento:'Cabañas', dias:['Lunes','Jueves'], horario:'1:20-1:45pm', lugar:'Parque Central' },
+      { destino:'Tejutepeque', municipio:'Tejutepeque', departamento:'Cabañas', dias:['Lunes','Jueves'], horario:'1:00-1:30pm', lugar:'Parque central por las letras' },
+      { destino:'El Tránsito', municipio:'El Tránsito', departamento:'San Miguel', dias:['Lunes','Jueves'], horario:'1:00-2:00pm', lugar:'Frente a Despensa Familiar' },
+      { destino:'San Rafael Oriente', municipio:'San Rafael Oriente', departamento:'San Miguel', dias:['Lunes','Jueves'], horario:'2:15-2:45pm', lugar:'Parque Central' },
+      { destino:'Ilobasco', municipio:'Ilobasco', departamento:'Cabañas', dias:['Lunes','Jueves'], horario:'9:00am-1:00pm', lugar:'Local de Entrega' },
+      { destino:'Sensuntepeque', municipio:'Sensuntepeque', departamento:'Cabañas', dias:['Lunes','Jueves'], horario:'9:00am-11:00pm', lugar:'Local de Entrega' },
+      // ── Recogidas Martes / Viernes ──
+      { destino:'Alegría', municipio:'Alegría', departamento:'Usulután', dias:['Martes','Viernes'], horario:'8:00-8:30am', lugar:'Parque Central' },
+      { destino:'El Divisadero', municipio:'El Divisadero', departamento:'Morazán', dias:['Martes','Viernes'], horario:'8:00-8:30am', lugar:'Parque recreativo el divisadero' },
+      { destino:'Ciudad Barrios', municipio:'Ciudad Barrios', departamento:'San Miguel', dias:['Martes','Viernes'], horario:'8:00-9:00am', lugar:'A un costado de casa comunal' },
+      { destino:'Suchitoto', municipio:'Suchitoto', departamento:'Cuscatlán', dias:['Martes','Viernes'], horario:'8:00-9:00am', lugar:'Parque Central' },
+      { destino:'Jocoro', municipio:'Jocoro', departamento:'Morazán', dias:['Martes','Viernes'], horario:'8:45-9:30am', lugar:'Afuera de iglesia San Felipe' },
+      { destino:'Mercedes Umaña', municipio:'Mercedes Umaña', departamento:'Usulután', dias:['Martes','Viernes'], horario:'9:15-9:45am', lugar:'Parque Central' },
+      { destino:'Apastepeque', municipio:'Apastepeque', departamento:'San Vicente', dias:['Martes','Viernes'], horario:'9:30-10:00am', lugar:'Frente a iglesia y parque Jose Canales' },
+      { destino:'Texistepeque', municipio:'Texistepeque', departamento:'Santa Ana', dias:['Martes','Viernes'], horario:'9:30-10:00am', lugar:'Costado del parque central, afuera de venta de tropigas Tony (Calle Libertad)' },
+      { destino:'Chapeltique', municipio:'Chapeltique', departamento:'San Miguel', dias:['Martes','Viernes'], horario:'9:45-10:30am', lugar:'Parque Central' },
+      { destino:'La gran vía', municipio:'Antiguo Cuscatlán', departamento:'La Libertad', dias:['Martes','Viernes'], horario:'9:45-10:15am', lugar:'Frente a simán por gasolinera Shell' },
+      { destino:'Santiago Texacuangos', municipio:'Santiago Texacuangos', departamento:'San Salvador', dias:['Martes','Viernes'], horario:'9:45-10:10am', lugar:'Frente a Alcaldía' },
+      { destino:'Sociedad', municipio:'Sociedad', departamento:'Morazán', dias:['Martes','Viernes'], horario:'10:00-10:45am', lugar:'Parque Central' },
+      { destino:'Santiago de la Frontera', municipio:'Santiago de la Frontera', departamento:'Santa Ana', dias:['Martes','Viernes'], horario:'10:00-10:45am', lugar:'Parque / Frente a Clínica' },
+      { destino:'El Refugio', municipio:'El Refugio', departamento:'Ahuachapán', dias:['Martes','Viernes'], horario:'10:30-11:00am', lugar:'Frente a Alcaldía' },
+      { destino:'El Paraíso', municipio:'El Paraíso', departamento:'Chalatenango', dias:['Martes','Viernes'], horario:'10:20-10:40am', lugar:'Frente a Neveria y Farmacia La Salud' },
+      { destino:'Agua Caliente', municipio:'Agua Caliente', departamento:'Chalatenango', dias:['Martes','Viernes'], horario:'9:10-9:30am', lugar:'Frente a Iglesia Católica' },
+      { destino:'Ciudad El Triunfo', municipio:'El Triunfo', departamento:'Usulután', dias:['Martes','Viernes'], horario:'11:15am-12:00pm', lugar:'Frente a Iglesia Católica' },
+      { destino:'Turín', municipio:'Turín', departamento:'Ahuachapán', dias:['Martes','Viernes'], horario:'11:15am-12:00pm', lugar:'Parque frente a Alcaldía' },
+      { destino:'San Sebastian', municipio:'San Sebastián', departamento:'San Vicente', dias:['Martes','Viernes'], horario:'11:00-11:30am', lugar:'Frente a caja de Crédito y Don Pollo' },
+      { destino:'Sesori', municipio:'Sesori', departamento:'San Miguel', dias:['Martes','Viernes'], horario:'11:00-11:45am', lugar:'Parque Central' },
+      { destino:'Santo Domingo', municipio:'Santo Domingo', departamento:'San Vicente', dias:['Martes','Viernes'], horario:'10:20-10:45am', lugar:'Frente a Alcaldía' },
+      { destino:'Estanzuelas', municipio:'Estanzuelas', departamento:'Usulután', dias:['Martes','Viernes'], horario:'10:10-10:45am', lugar:'Parque Central' },
+      { destino:'Jucuapa', municipio:'Jucuapa', departamento:'Usulután', dias:['Martes','Viernes'], horario:'12:30-1:30pm', lugar:'Parque Central' },
+      { destino:'Moncagua', municipio:'Moncagua', departamento:'San Miguel', dias:['Martes','Viernes'], horario:'12:30-1:00pm', lugar:'Parque Central' },
+      { destino:'Guazapa', municipio:'Guazapa', departamento:'San Salvador', dias:['Martes','Viernes'], horario:'12:20-1:00pm', lugar:'Parque Central' },
+      { destino:'Lolotique', municipio:'Lolotique', departamento:'San Miguel', dias:['Martes','Viernes'], horario:'1:30-2:00pm', lugar:'Parque frente a Iglesia' },
+      { destino:'El Rosario La Paz', municipio:'El Rosario', departamento:'La Paz', dias:['Martes','Viernes'], horario:'1:15-1:45pm', lugar:'Parque Municipal' },
+      { destino:'La Palma', municipio:'La Palma', departamento:'Chalatenango', dias:['Martes','Viernes'], horario:'2:00-2:30pm', lugar:'Parque entre ferreteria central y parqueo municipal' },
+      { destino:'Chinameca', municipio:'Chinameca', departamento:'San Miguel', dias:['Martes','Viernes'], horario:'1:45-2:30pm', lugar:'Parque central' },
+      { destino:'Ciudad Delgado', municipio:'Ciudad Delgado', departamento:'San Salvador', dias:['Martes','Viernes'], horario:'2:00-3:00pm', lugar:'Tramo de pupuseria mamamila / pizza buonesera' },
+      { destino:'Nueva Guadalupe', municipio:'Nueva Guadalupe', departamento:'San Miguel', dias:['Martes','Viernes'], horario:'2:15-2:45pm', lugar:'Parque central' },
+      { destino:'Tonacatepeque', municipio:'Tonacatepeque', departamento:'San Salvador', dias:['Martes','Viernes'], horario:'2:00-2:30pm', lugar:'Parque Central' },
+      { destino:'Ciudad Real', municipio:'San Juan Opico', departamento:'La Libertad', dias:['Martes','Viernes'], horario:'9:00-10:00am', lugar:'Entrada de Gasolinera UNO a orilla de carretera' },
+      // ── Recogidas Miércoles / Domingo ──
+      { destino:'Nueva Esparta', municipio:'Nueva Esparta', departamento:'La Unión', dias:['Miércoles','Domingo'], horario:'9:15-9:30am', lugar:'Parque Central' },
+      { destino:'Anamoros', municipio:'Anamorós', departamento:'La Unión', dias:['Miércoles','Domingo'], horario:'9:50-10:20am', lugar:'Parque Central' },
+      { destino:'Lislique', municipio:'Lislique', departamento:'La Unión', dias:['Miércoles','Domingo'], horario:'10:45-11:15am', lugar:'Parque Central' },
+      { destino:'Corinto', municipio:'Corinto', departamento:'Morazán', dias:['Miércoles','Domingo'], horario:'11:45am-12:15pm', lugar:'Parque Central' },
+      { destino:'Zaragoza', municipio:'Zaragoza', departamento:'La Libertad', dias:['Miércoles','Sábado'], horario:'2:15-3:00pm', lugar:'Fte a casa de la cultura / venta de dulces tipicos' },
+      // ── Recogidas Miércoles / Sábado ──
+      { destino:'Antiguo Cuscatlán', municipio:'Antiguo Cuscatlán', departamento:'La Libertad', dias:['Miércoles','Sábado'], horario:'1:00-1:40pm', lugar:'Parque / Esquina de don pollo' },
+      { destino:'Santiago Nonualco', municipio:'Santiago Nonualco', departamento:'La Paz', dias:['Lunes','Jueves'], horario:'8:30-9:30am', lugar:'Parqueo fte a Liceo Juan Bueno' },
+      // ── Agencias Lunes-Sábado ──
+      { destino:'Acajutla', municipio:'Acajutla', departamento:'Sonsonate', dias:['Lunes','Martes','Miércoles','Jueves','Viernes','Sábado'], horario:'9am-4pm (Sáb 9am-12pm)', lugar:'Local de Entrega (Paquete Dura 3 Dias)' },
+      { destino:'Ahuachapán', municipio:'Ahuachapán', departamento:'Ahuachapán', dias:['Lunes','Martes','Miércoles','Jueves','Viernes','Sábado'], horario:'9am-4pm (Sáb 9am-1pm)', lugar:'Local de Entrega (Paquete Dura 3 Dias)' },
+      { destino:'Altavista', municipio:'Soyapango', departamento:'San Salvador', dias:['Lunes','Martes','Miércoles','Jueves','Viernes','Sábado'], horario:'9am-4pm (Sáb 9am-12pm)', lugar:'Local de Entrega (Paquete Dura 3 Dias)' },
+      { destino:'Apopa', municipio:'Apopa', departamento:'San Salvador', dias:['Lunes','Martes','Miércoles','Jueves','Viernes','Sábado'], horario:'9am-4pm (Sáb 9am-1pm)', lugar:'Local de Entrega (Paquete Dura 3 Dias)' },
+      { destino:'Armenia', municipio:'Armenia', departamento:'Sonsonate', dias:['Lunes','Martes','Miércoles','Jueves','Viernes','Sábado'], horario:'9am-4pm (Sáb 9am-1pm)', lugar:'Local de Entrega (Paquete Dura 3 Dias)' },
+      { destino:'Atiquizaya', municipio:'Atiquizaya', departamento:'Ahuachapán', dias:['Lunes','Martes','Miércoles','Jueves','Viernes','Sábado'], horario:'9am-4pm (Sáb 9am-12pm)', lugar:'Local de Entrega (Paquete Dura 3 Dias)' },
+      { destino:'Berlín', municipio:'Berlín', departamento:'Usulután', dias:['Lunes','Martes','Miércoles','Jueves','Viernes','Sábado'], horario:'9am-4pm (Sáb 9am-12pm)', lugar:'Local de Entrega (Paquete Dura 3 Dias)' },
+      { destino:'Candelaria de la Frontera', municipio:'Candelaria de la Frontera', departamento:'Santa Ana', dias:['Lunes','Martes','Miércoles','Jueves','Viernes','Sábado'], horario:'9am-4pm (Sáb 9am-12pm)', lugar:'Local de Entrega (Paquete Dura 3 Dias)' },
+      { destino:'Cara Sucia', municipio:'San Francisco Menéndez', departamento:'Ahuachapán', dias:['Lunes','Martes','Miércoles','Jueves','Viernes','Sábado'], horario:'9am-4pm (Sáb 9am-12pm)', lugar:'Local de Entrega (Paquete Dura 3 Dias)' },
+      { destino:'Chalatenango', municipio:'Chalatenango', departamento:'Chalatenango', dias:['Lunes','Martes','Miércoles','Jueves','Viernes','Sábado'], horario:'9am-4pm (Sáb 9am-12pm)', lugar:'Local de Entrega (Paquete Dura 3 Dias)' },
+      { destino:'Chalchuapa', municipio:'Chalchuapa', departamento:'Santa Ana', dias:['Lunes','Martes','Miércoles','Jueves','Viernes','Sábado'], horario:'9am-4pm (Sáb 9am-12pm)', lugar:'Local de Entrega (Paquete Dura 3 Dias)' },
+      { destino:'Ciudad Arce', municipio:'Ciudad Arce', departamento:'La Libertad', dias:['Lunes','Martes','Miércoles','Jueves','Viernes','Sábado'], horario:'9am-4pm (Sáb 9am-12pm)', lugar:'Local de Entrega (Paquete Dura 3 Dias)' },
+      { destino:'Cojutepeque', municipio:'Cojutepeque', departamento:'Cuscatlán', dias:['Lunes','Martes','Miércoles','Jueves','Viernes','Sábado'], horario:'9am-4pm (Sáb 9am-12pm)', lugar:'Local de Entrega (Paquete Dura 3 Dias)' },
+      { destino:'Izalco', municipio:'Izalco', departamento:'Sonsonate', dias:['Lunes','Martes','Miércoles','Jueves','Viernes','Sábado'], horario:'9am-4pm (Sáb 9am-12pm)', lugar:'Local de Entrega (Paquete Dura 3 Dias)' },
+      { destino:'Jiquilisco', municipio:'Jiquilisco', departamento:'Usulután', dias:['Lunes','Martes','Miércoles','Jueves','Viernes','Sábado'], horario:'9am-4pm (Sáb 9am-12pm)', lugar:'Local de Entrega (Paquete Dura 3 Dias)' },
+      { destino:'La Unión', municipio:'La Unión', departamento:'La Unión', dias:['Lunes','Martes','Miércoles','Jueves','Viernes','Sábado'], horario:'9am-4pm (Sáb 9am-12pm)', lugar:'Local de Entrega (Paquete Dura 3 Dias)' },
+      { destino:'Lourdes', municipio:'Colón', departamento:'La Libertad', dias:['Lunes','Martes','Miércoles','Jueves','Viernes','Sábado'], horario:'9am-4pm (Sáb 9am-12pm)', lugar:'Local de Entrega (Paquete Dura 3 Dias)' },
+      { destino:'Metalío', municipio:'Acajutla', departamento:'Sonsonate', dias:['Lunes','Martes','Miércoles','Jueves','Viernes','Sábado'], horario:'9am-4pm (Sáb 9am-12pm)', lugar:'Local de Entrega (Paquete Dura 3 Dias)' },
+      { destino:'Metapán', municipio:'Metapán', departamento:'Santa Ana', dias:['Lunes','Martes','Miércoles','Jueves','Viernes','Sábado'], horario:'9am-4pm (Sáb 9am-12pm)', lugar:'Local de Entrega (Paquete Dura 3 Dias)' },
+      { destino:'Nejapa', municipio:'Nejapa', departamento:'San Salvador', dias:['Lunes','Martes','Miércoles','Jueves','Viernes','Sábado'], horario:'9am-4pm (Sáb 9am-12pm)', lugar:'Local de Entrega (Paquete Dura 3 Dias)' },
+      { destino:'Nueva Concepción', municipio:'Nueva Concepción', departamento:'Chalatenango', dias:['Lunes','Martes','Miércoles','Jueves','Viernes','Sábado'], horario:'9am-4pm (Sáb 9am-12pm)', lugar:'Local de Entrega (Paquete Dura 3 Dias)' },
+      { destino:'San Salvador Metrogalerías', municipio:'San Salvador', departamento:'San Salvador', dias:['Lunes','Martes','Miércoles','Jueves','Viernes','Sábado'], horario:'9am-4pm (Sáb 9am-1pm)', lugar:'Local de Entrega (Paquete Dura 3 Dias)' },
+      { destino:'San Salvador Centro Histórico', municipio:'San Salvador', departamento:'San Salvador', dias:['Lunes','Martes','Miércoles','Jueves','Viernes','Sábado'], horario:'9am-4pm (Sáb 9am-12pm)', lugar:'Local de Entrega (Paquete Dura 3 Dias)' },
+      { destino:'San Salvador Plaza Jerez', municipio:'San Salvador', departamento:'San Salvador', dias:['Lunes','Martes','Miércoles','Jueves','Viernes','Sábado'], horario:'9am-4pm (Sáb 9am-12pm)', lugar:'Local de Entrega (Paquete Dura 3 Dias)' },
+      { destino:'San Vicente', municipio:'San Vicente', departamento:'San Vicente', dias:['Lunes','Martes','Miércoles','Jueves','Viernes','Sábado'], horario:'9am-4pm (Sáb 9am-12pm)', lugar:'Local de Entrega (Paquete Dura 3 Dias)' },
+      { destino:'Santa Ana Centro', municipio:'Santa Ana', departamento:'Santa Ana', dias:['Lunes','Martes','Miércoles','Jueves','Viernes','Sábado'], horario:'9am-4pm (Sáb 9am-12pm)', lugar:'Local de Entrega (Paquete Dura 3 Dias)' },
+      { destino:'Santa Ana Plaza 33', municipio:'Santa Ana', departamento:'Santa Ana', dias:['Lunes','Martes','Miércoles','Jueves','Viernes','Sábado'], horario:'9am-4pm (Sáb 9am-1pm)', lugar:'Local de Entrega (Paquete Dura 3 Dias)' },
+      { destino:'Santa Rosa de Lima', municipio:'Santa Rosa de Lima', departamento:'La Unión', dias:['Lunes','Martes','Miércoles','Jueves','Viernes','Sábado'], horario:'9am-4pm (Sáb 9am-12pm)', lugar:'Local de Entrega (a partir del 21 de abril 2026)' },
+      { destino:'Santiago de María', municipio:'Santiago de María', departamento:'Usulután', dias:['Lunes','Martes','Miércoles','Jueves','Viernes','Sábado'], horario:'9am-4pm (Sáb 9am-12pm)', lugar:'Local de Entrega (Paquete Dura 3 Dias)' },
+      { destino:'Sonsonate', municipio:'Sonsonate', departamento:'Sonsonate', dias:['Lunes','Martes','Miércoles','Jueves','Viernes','Sábado'], horario:'9am-4pm (Sáb 9am-12pm)', lugar:'Local de Entrega (Paquete Dura 3 Dias)' },
+      { destino:'Sonzacate', municipio:'Sonzacate', departamento:'Sonsonate', dias:['Lunes','Martes','Miércoles','Jueves','Viernes','Sábado'], horario:'9am-4pm (Sáb 9am-12pm)', lugar:'Local de Entrega (Paquete Dura 3 Dias)' },
+      { destino:'Soyapango', municipio:'Soyapango', departamento:'San Salvador', dias:['Lunes','Martes','Miércoles','Jueves','Viernes','Sábado'], horario:'9am-4pm (Sáb 9am-12pm)', lugar:'Local de Entrega (Paquete Dura 3 Dias)' },
+      { destino:'Usulután', municipio:'Usulután', departamento:'Usulután', dias:['Lunes','Martes','Miércoles','Jueves','Viernes','Sábado'], horario:'9am-4pm (Sáb 9am-12pm)', lugar:'Local de Entrega (Paquete Dura 3 Dias)' },
+      { destino:'Zacatecoluca', municipio:'Zacatecoluca', departamento:'La Paz', dias:['Lunes','Martes','Miércoles','Jueves','Viernes','Sábado'], horario:'9am-4pm (Sáb 9am-12pm)', lugar:'Local de Entrega (Paquete Dura 3 Dias)' },
+      // ── Agencias Lunes / Jueves ──
+      { destino:'Aguilares', municipio:'Aguilares', departamento:'San Salvador', dias:['Martes','Viernes'], horario:'10am-4pm (recepción 9-11:45am)', lugar:'Local de Entrega (Paquete Dura 3 Dias)' },
+      { destino:'Juayúa', municipio:'Juayúa', departamento:'Sonsonate', dias:['Lunes','Jueves'], horario:'11:30am-5pm (recepción 9-10:30am)', lugar:'Local de Entrega (Paquete Dura 3 Dias) Costo Extra $0.50' },
+      { destino:'Nahuizalco', municipio:'Nahuizalco', departamento:'Sonsonate', dias:['Lunes','Jueves'], horario:'11am-5pm (recepción 9-10:30am)', lugar:'Local de Entrega (Paquete Dura 3 Dias)' },
+      // ── Agencias con horario Domingo ──
+      { destino:'Armenia', municipio:'Armenia', departamento:'Sonsonate', dias:['Domingo'], horario:'8:00-9:00am', lugar:'Local de Entrega (Paquete Dura 3 Dias)' },
+      { destino:'Izalco', municipio:'Izalco', departamento:'Sonsonate', dias:['Domingo'], horario:'10:30-11:30am', lugar:'Local de Entrega (Paquete Dura 3 Dias)' },
+      { destino:'Sonzacate', municipio:'Sonzacate', departamento:'Sonsonate', dias:['Domingo'], horario:'11:50am-12:20pm', lugar:'Local de Entrega (Paquete Dura 3 Dias)' },
+      { destino:'Sonsonate', municipio:'Sonsonate', departamento:'Sonsonate', dias:['Domingo'], horario:'12:40-1:40pm', lugar:'Local de Entrega (Paquete Dura 3 Dias)' },
+      // ── Agencia Santa Tecla ──
+      { destino:'Santa Tecla', municipio:'Santa Tecla', departamento:'La Libertad', dias:['Miércoles','Sábado'], horario:'1:00-3:00pm', lugar:'Local de Entrega (Paquete Dura 3 Dias) Costo Extra $0.50' }
+    ];
+
+    DB.set([
+      {
+        id: 'FLOR-ABREGO-001', nombre: 'Encomiendas Flor Abrego', telefono: '',
+        cobertura: [...new Set(RUTAS_FLOR.map(r=>r.destino))].join(','),
+        dias: ['Lunes','Martes','Miércoles','Jueves','Viernes','Sábado','Domingo'],
+        tiempo: '1 día', tarifa: '2.00', rutas: RUTAS_FLOR,
+        creadoEn: new Date().toISOString()
+      },
+      {
+        id: 'ENVIOS-EXPRESS-001', nombre: 'Pedidos Express', telefono: '',
+        cobertura: [...new Set(RUTAS_EXPRESS.map(r=>r.destino))].join(','),
+        dias: [...new Set(RUTAS_EXPRESS.flatMap(r=>r.dias))],
+        tiempo: 'Paquete dura 3 días', tarifa: '2.50', rutas: RUTAS_EXPRESS,
+        creadoEn: new Date().toISOString()
+      }
+    ]);
+  }
+
+  initBuscarAutocomplete();
+  renderStats();
+  renderQuickTags();
+  updateBadges();
+}
+
+document.addEventListener('DOMContentLoaded', init);
+</script>
+</body>
+</html>
