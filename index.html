@@ -898,21 +898,10 @@ body {
 
 /* ─── PEDIDO LAYOUT ─── */
 
-/* Outer two-column layout: form | preview */
-.pedido-wrap {
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
-  align-items: stretch;
-}
-@media (min-width: 760px) {
-  .pedido-wrap {
-    flex-direction: row;
-    align-items: flex-start;
-  }
-  .pedido-form-col   { flex: 3; min-width: 0; }
-  .pedido-preview-col { flex: 2; min-width: 0; position: sticky; top: 16px; }
-}
+/* pedido-wrap kept for backward compat */
+.pedido-wrap { display: flex; flex-direction: column; gap: 14px; }
+.pedido-form-col   { flex: 3; min-width: 0; }
+.pedido-preview-col { flex: 2; min-width: 0; }
 
 /* Inner field grid inside each card */
 .ped-grid {
@@ -984,6 +973,22 @@ textarea.ped-input { min-height: 70px; resize: vertical; }
   background: rgba(79,125,255,0.15);
   border-color: var(--accent);
   color: var(--blue-light);
+}
+
+/* ─── PEDIDO TOP ROW ─── */
+.ped-top-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14px;
+  align-items: flex-start;
+}
+.ped-top-card {
+  flex: 1 1 260px;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  padding: 18px 20px;
+  margin-bottom: 0;
 }
 
 /* ─── SCROLLBAR ─── */
@@ -1187,140 +1192,129 @@ body.light .nav-badge { background: #3a66f0; }
       <!-- ═══ PEDIDO ═══ -->
       <div id="view-pedido" class="view">
         <div class="section-title">Crear Pedido — Confirmación para cliente</div>
-        <div class="pedido-wrap">
 
-          <!-- ── FORMULARIO ── -->
-          <div class="pedido-form-col">
+        <!-- ── Tipo de envío (barra superior) ── -->
+        <div style="display:flex;gap:10px;margin-bottom:16px;flex-wrap:wrap;">
+          <label class="tipo-envio-chip" id="chip-encomienda" onclick="setTipoEnvio('encomienda')">🚐 Encomienda</label>
+          <label class="tipo-envio-chip" id="chip-repartidor" onclick="setTipoEnvio('repartidor')">🛵 Repartidor local</label>
+        </div>
 
-            <!-- Tipo de envío -->
-            <div class="card" style="padding:18px 20px;margin-bottom:16px;">
-              <div class="form-label" style="margin-bottom:12px;font-size:13px;">Tipo de envío</div>
-              <div style="display:flex;gap:10px;flex-wrap:wrap;">
-                <label class="tipo-envio-chip" id="chip-encomienda" onclick="setTipoEnvio('encomienda')">
-                  🚐 Encomienda
-                </label>
-                <label class="tipo-envio-chip" id="chip-repartidor" onclick="setTipoEnvio('repartidor')">
-                  🛵 Repartidor local
-                </label>
+        <!-- ── Fila superior: Cliente | Artículo | Envío ── -->
+        <div class="ped-top-row" id="ped-top-row" style="display:none;">
+
+          <div class="card ped-top-card">
+            <div class="ped-section-title">Cliente</div>
+            <div style="display:flex;flex-direction:column;gap:12px;">
+              <div class="form-group" style="margin:0;">
+                <label class="form-label">Nombre *</label>
+                <input class="form-input ped-input" id="ped-cliente" placeholder="Ej: Henry Urbina" oninput="previsualizarPedido()">
+              </div>
+              <div class="form-group" style="margin:0;">
+                <label class="form-label">WhatsApp *</label>
+                <input class="form-input ped-input" id="ped-contacto" placeholder="6457-2654" oninput="previsualizarPedido()">
               </div>
             </div>
+          </div>
 
-            <!-- Datos del cliente -->
-            <div class="card" style="padding:20px;margin-bottom:16px;">
-              <div class="ped-section-title">Cliente</div>
-              <div class="ped-grid">
-                <div class="form-group">
-                  <label class="form-label">Nombre del cliente *</label>
-                  <input class="form-input ped-input" id="ped-cliente" placeholder="Ej: Henry Urbina" oninput="previsualizarPedido()">
-                </div>
-                <div class="form-group">
-                  <label class="form-label">Contacto (WhatsApp) *</label>
-                  <input class="form-input ped-input" id="ped-contacto" placeholder="6457-2654" oninput="previsualizarPedido()">
-                </div>
+          <div class="card ped-top-card">
+            <div class="ped-section-title">Artículo</div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+              <div class="form-group" style="margin:0;grid-column:1/-1;">
+                <label class="form-label">Descripción *</label>
+                <input class="form-input ped-input" id="ped-articulo" placeholder="Ej: New Balance 530" oninput="previsualizarPedido()">
+              </div>
+              <div class="form-group" style="margin:0;">
+                <label class="form-label">Talla</label>
+                <input class="form-input ped-input" id="ped-talla" placeholder="8, XL, 38" oninput="previsualizarPedido()">
+              </div>
+              <div class="form-group" style="margin:0;">
+                <label class="form-label">Color</label>
+                <input class="form-input ped-input" id="ped-color" placeholder="Blanco, Negro" oninput="previsualizarPedido()">
+              </div>
+              <div class="form-group" style="margin:0;">
+                <label class="form-label">Precio (USD) *</label>
+                <input class="form-input ped-input" type="number" id="ped-precio" placeholder="65.00" step="0.01" min="0" oninput="previsualizarPedido()">
+              </div>
+              <div class="form-group" style="margin:0;">
+                <label class="form-label">Costo envío (USD)</label>
+                <input class="form-input ped-input" type="number" id="ped-envio" placeholder="3.00" step="0.25" min="0" value="3" oninput="previsualizarPedido()">
+              </div>
+              <div class="form-group" style="margin:0;grid-column:1/-1;">
+                <label class="form-label">Notas (opcional)</label>
+                <textarea class="form-input ped-input" id="ped-notas" rows="2" placeholder="Instrucciones especiales..." oninput="previsualizarPedido()" style="resize:vertical;min-height:52px;"></textarea>
               </div>
             </div>
+          </div>
 
-            <!-- Artículo -->
-            <div class="card" style="padding:20px;margin-bottom:16px;">
-              <div class="ped-section-title">Artículo</div>
-              <div class="ped-grid">
-                <div class="form-group">
-                  <label class="form-label">Descripción del artículo *</label>
-                  <input class="form-input ped-input" id="ped-articulo" placeholder="Ej: New Balance 530" oninput="previsualizarPedido()">
-                </div>
-                <div class="form-group">
-                  <label class="form-label">Talla</label>
-                  <input class="form-input ped-input" id="ped-talla" placeholder="Ej: 8, XL, 38" oninput="previsualizarPedido()">
-                </div>
-                <div class="form-group">
-                  <label class="form-label">Color</label>
-                  <input class="form-input ped-input" id="ped-color" placeholder="Ej: Blanco, Negro" oninput="previsualizarPedido()">
-                </div>
-                <div class="form-group">
-                  <label class="form-label">Precio artículo (USD) *</label>
-                  <input class="form-input ped-input" type="number" id="ped-precio" placeholder="65.00" step="0.01" min="0" oninput="previsualizarPedido()">
-                </div>
-                <div class="form-group">
-                  <label class="form-label">Costo de envío (USD)</label>
-                  <input class="form-input ped-input" type="number" id="ped-envio" placeholder="3.00" step="0.25" min="0" value="3" oninput="previsualizarPedido()">
-                </div>
-                <div class="form-group full">
-                  <label class="form-label">Notas (opcional)</label>
-                  <textarea class="form-input ped-input" id="ped-notas" rows="2" placeholder="Color, instrucciones especiales..." oninput="previsualizarPedido()" style="resize:vertical;min-height:64px;"></textarea>
-                </div>
+          <!-- Envío encomienda -->
+          <div class="card ped-top-card" id="ped-block-encomienda" style="display:none;">
+            <div class="ped-section-title">Envío</div>
+            <div style="display:flex;flex-direction:column;gap:12px;">
+              <div class="form-group" style="margin:0;">
+                <label class="form-label">Destino *</label>
+                <input class="form-input ped-input" id="ped-destino-texto" placeholder="Escribe el destino..." oninput="buscarEncomendistasParaDestino()" autocomplete="off">
+              </div>
+              <div id="ped-enc-wrap" style="display:none;flex-direction:column;gap:8px;">
+                <label class="form-label">Empresa disponible</label>
+                <div id="ped-enc-lista" style="display:flex;flex-direction:column;gap:6px;"></div>
+              </div>
+              <div id="ped-enc-selected-wrap" style="display:none;flex-direction:column;gap:6px;">
+                <label class="form-label">Empresa seleccionada</label>
+                <div id="ped-enc-selected-card"></div>
+                <button onclick="cambiarEncomienda()" style="padding:5px 12px;background:transparent;color:var(--text3);border:1px solid var(--border2);border-radius:var(--radius-sm);font-size:11px;cursor:pointer;font-family:DM Sans,sans-serif;align-self:flex-start;">↩ Cambiar</button>
+              </div>
+              <div id="ped-fechas-wrap" style="display:none;flex-direction:column;gap:6px;">
+                <label class="form-label">Fecha de entrega</label>
+                <div id="ped-fechas-lista" style="display:flex;flex-wrap:wrap;gap:6px;"></div>
               </div>
             </div>
+          </div>
 
-            <!-- Envío por Encomienda -->
-            <div class="card" id="ped-block-encomienda" style="padding:20px;margin-bottom:16px;display:none;">
-              <div class="ped-section-title">Envío</div>
-              <div class="ped-grid">
-                <div class="form-group full">
-                  <label class="form-label">Destino *</label>
-                  <input class="form-input ped-input" id="ped-destino-texto" placeholder="Escribe el destino..." oninput="buscarEncomendistasParaDestino()" autocomplete="off">
-                </div>
-                <div class="form-group full" id="ped-enc-wrap" style="display:none;">
-                  <label class="form-label">Empresa de envío disponible</label>
-                  <div id="ped-enc-lista" style="display:flex;flex-direction:column;gap:8px;"></div>
-                </div>
-                <div class="form-group full" id="ped-enc-selected-wrap" style="display:none;">
-                  <label class="form-label">Empresa seleccionada</label>
-                  <div id="ped-enc-selected-card" style=""></div>
-                  <button onclick="cambiarEncomienda()" style="margin-top:8px;padding:6px 14px;background:transparent;color:var(--text3);border:1px solid var(--border2);border-radius:var(--radius-sm);font-size:12px;cursor:pointer;font-family:DM Sans,sans-serif;">↩ Cambiar empresa</button>
-                </div>
-                <div class="form-group full" id="ped-fechas-wrap" style="display:none;">
-                  <label class="form-label">Fecha de entrega</label>
-                  <div id="ped-fechas-lista" style="display:flex;flex-wrap:wrap;gap:8px;margin-top:4px;"></div>
-                </div>
+          <!-- Envío repartidor -->
+          <div class="card ped-top-card" id="ped-block-repartidor" style="display:none;">
+            <div class="ped-section-title">Envío — Repartidor</div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+              <div class="form-group" style="margin:0;grid-column:1/-1;">
+                <label class="form-label">Dirección exacta *</label>
+                <input class="form-input ped-input" id="ped-dir" placeholder="Colonia, calle, referencia..." oninput="previsualizarPedido()">
+              </div>
+              <div class="form-group" style="margin:0;grid-column:1/-1;">
+                <label class="form-label">Municipio</label>
+                <input class="form-input ped-input" id="ped-muni" list="muni-list-ped" placeholder="Selecciona municipio" oninput="previsualizarPedido()">
+                <datalist id="muni-list-ped"></datalist>
+              </div>
+              <div class="form-group" style="margin:0;grid-column:1/-1;">
+                <label class="form-label">Fecha</label>
+                <input class="form-input ped-input" type="date" id="ped-fecha-rep" oninput="previsualizarPedido()">
+              </div>
+              <div class="form-group" style="margin:0;">
+                <label class="form-label">Hora desde</label>
+                <input class="form-input ped-input" type="time" id="ped-hora-inicio" oninput="previsualizarPedido()">
+              </div>
+              <div class="form-group" style="margin:0;">
+                <label class="form-label">Hora hasta</label>
+                <input class="form-input ped-input" type="time" id="ped-hora-fin" oninput="previsualizarPedido()">
               </div>
             </div>
+          </div>
 
-            <!-- Envío por Repartidor -->
-            <div class="card" id="ped-block-repartidor" style="padding:20px;margin-bottom:16px;display:none;">
-              <div class="ped-section-title">Envío — Repartidor local</div>
-              <div class="ped-grid">
-                <div class="form-group full">
-                  <label class="form-label">Dirección exacta *</label>
-                  <input class="form-input ped-input" id="ped-dir" placeholder="Colonia, calle, punto de referencia..." oninput="previsualizarPedido()">
-                </div>
-                <div class="form-group">
-                  <label class="form-label">Municipio</label>
-                  <input class="form-input ped-input" id="ped-muni" list="muni-list-ped" placeholder="Selecciona el municipio" oninput="previsualizarPedido()">
-                  <datalist id="muni-list-ped"></datalist>
-                </div>
-                <div class="form-group">
-                  <label class="form-label">Fecha de entrega</label>
-                  <input class="form-input ped-input" type="date" id="ped-fecha-rep" oninput="previsualizarPedido()">
-                </div>
-                <div class="form-group">
-                  <label class="form-label">Hora desde</label>
-                  <input class="form-input ped-input" type="time" id="ped-hora-inicio" oninput="previsualizarPedido()">
-                </div>
-                <div class="form-group">
-                  <label class="form-label">Hora hasta</label>
-                  <input class="form-input ped-input" type="time" id="ped-hora-fin" oninput="previsualizarPedido()">
-                </div>
-              </div>
-            </div>
-
-            <div class="form-actions" style="padding-top:0;border:none;justify-content:stretch;gap:12px;">
-              <button class="btn btn-secondary" onclick="limpiarPedido()" style="flex:1;">Limpiar</button>
-              <button class="btn btn-primary" onclick="copiarConfirmacion()" style="flex:2;">
-                <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
-                Copiar confirmación
+          <!-- Vista previa — alineada con las demás tarjetas -->
+          <div class="card ped-top-card" id="ped-preview-card">
+            <div class="ped-section-title">Vista previa</div>
+            <div id="ped-preview" style="font-size:13px;line-height:1.9;color:var(--text2);white-space:pre-wrap;word-break:break-word;flex:1;">Completa el formulario...</div>
+            <div style="margin-top:16px;display:flex;gap:10px;">
+              <button class="btn btn-secondary" onclick="limpiarPedido()" style="flex:1;padding:9px;">Limpiar</button>
+              <button class="btn btn-primary" onclick="copiarConfirmacion()" style="flex:2;padding:9px;">
+                <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+                Copiar
               </button>
             </div>
-            <div id="ped-copy-ok" style="display:none;margin-top:10px;color:var(--green);font-size:13px;font-weight:500;text-align:center;">✓ ¡Copiado al portapapeles!</div>
+            <div id="ped-copy-ok" style="display:none;margin-top:8px;color:var(--green);font-size:12px;font-weight:500;text-align:center;">✓ ¡Copiado!</div>
           </div>
 
-          <!-- ── VISTA PREVIA ── -->
-          <div class="pedido-preview-col">
-            <div class="ped-section-title" style="margin-bottom:12px;">Vista previa del mensaje</div>
-            <div id="ped-preview" class="ped-preview-box">Completa el formulario para ver la confirmación...</div>
-          </div>
-
-        </div>
+        </div><!-- /ped-top-row -->
       </div>
+
 
       <!-- ═══ ENCOMENDISTAS ═══ -->
       <div id="view-encomendistas" class="view">
@@ -2278,9 +2272,12 @@ function setTipoEnvio(tipo) {
   // Update chips
   document.getElementById('chip-encomienda').classList.toggle('selected', tipo==='encomienda');
   document.getElementById('chip-repartidor').classList.toggle('selected', tipo==='repartidor');
+  // Show top row
+  var topRow = document.getElementById('ped-top-row');
+  if (topRow) topRow.style.display = '';
   // Show/hide blocks
-  (document.getElementById('ped-block-encomienda')||{style:{}}).style.display  = tipo==='encomienda'  ? '' : 'none';
-  (document.getElementById('ped-block-repartidor')||{style:{}}).style.display  = tipo==='repartidor'  ? '' : 'none';
+  (document.getElementById('ped-block-encomienda')||{style:{}}).style.display  = tipo==='encomienda'  ? 'flex' : 'none';
+  (document.getElementById('ped-block-repartidor')||{style:{}}).style.display  = tipo==='repartidor'  ? 'flex' : 'none';
   // Populate municipio datalist for repartidor — AMSS only
   if (tipo === 'repartidor') {
     var dl = document.getElementById('muni-list-ped');
@@ -2614,6 +2611,7 @@ function limpiarPedido() {
   var cr = document.getElementById('chip-repartidor'); if(cr) cr.classList.remove('selected');
   var be = document.getElementById('ped-block-encomienda'); if(be) be.style.display='none';
   var br = document.getElementById('ped-block-repartidor'); if(br) br.style.display='none';
+  var tr = document.getElementById('ped-top-row'); if(tr) tr.style.display='none';
   previsualizarPedido();
 }
 
