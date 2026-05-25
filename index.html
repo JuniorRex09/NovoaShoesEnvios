@@ -1276,7 +1276,11 @@ body.light .nav-badge { background: #3a66f0; }
             <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
               <div class="form-group" style="margin:0;grid-column:1/-1;">
                 <label class="form-label">Dirección exacta *</label>
-                <input class="form-input ped-input" id="ped-dir" placeholder="Colonia, calle, referencia..." oninput="previsualizarPedido()">
+                <input class="form-input ped-input" id="ped-dir" placeholder="Ej: Colonia Las Brisas, Calle Principal" oninput="previsualizarPedido()">
+              </div>
+              <div class="form-group" style="margin:0;grid-column:1/-1;">
+                <label class="form-label">Punto de referencia</label>
+                <input class="form-input ped-input" id="ped-ref" placeholder="Ej: Frente al parque, contiguo a farmacia" oninput="previsualizarPedido()">
               </div>
               <div class="form-group" style="margin:0;grid-column:1/-1;">
                 <label class="form-label">Municipio</label>
@@ -1302,7 +1306,11 @@ body.light .nav-badge { background: #3a66f0; }
           <div class="card ped-top-card" id="ped-preview-card">
             <div class="ped-section-title">Vista previa</div>
             <div id="ped-preview" style="font-size:13px;line-height:1.9;color:var(--text2);white-space:pre-wrap;word-break:break-word;flex:1;">Completa el formulario...</div>
-            <div style="margin-top:16px;display:flex;gap:10px;">
+            <div id="ped-total-bar" style="display:none;margin-top:12px;padding:10px 14px;background:rgba(45,212,160,0.08);border:1px solid rgba(45,212,160,0.25);border-radius:var(--radius-sm);display:flex;align-items:center;justify-content:space-between;">
+              <span style="font-size:12px;color:var(--text3);">Total a cobrar</span>
+              <span id="ped-total-val" style="font-family:Syne,sans-serif;font-size:20px;font-weight:700;color:var(--green);">$0.00</span>
+            </div>
+            <div style="margin-top:12px;display:flex;gap:10px;">
               <button class="btn btn-secondary" onclick="limpiarPedido()" style="flex:1;padding:9px;">Limpiar</button>
               <button class="btn btn-primary" onclick="copiarConfirmacion()" style="flex:2;padding:9px;">
                 <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
@@ -2458,7 +2466,7 @@ function cambiarEncomienda() {
   (document.getElementById('ped-enc-selected-wrap')||{style:{}}).style.display = 'none';
   (document.getElementById('ped-fechas-wrap')||{style:{}}).style.display = 'none';
   document.getElementById('ped-fechas-lista').innerHTML = '';
-  (document.getElementById('ped-enc-wrap')||{style:{}}).style.display = 'block';
+  (document.getElementById('ped-enc-wrap')||{style:{}}).style.display = 'flex';
   previsualizarPedido();
 }
 
@@ -2539,10 +2547,12 @@ function previsualizarPedido() {
     if (pedState.fechaSeleccionada)
       diaEntrega = pedState.fechaSeleccionada + (pedState.horario ? ', '+pedState.horario : '');
   } else if (pedState.tipo === 'repartidor') {
-    encNombre = 'Repartidor local';
+    encNombre = 'Repartidor';
     var dir  = (document.getElementById('ped-dir').value||'').trim();
+    var ref  = (document.getElementById('ped-ref')||{value:''}).value.trim();
     var muni = (document.getElementById('ped-muni').value||'').trim();
     destino  = dir + (muni ? ', '+muni : '');
+    lugar    = ref;  // punto de referencia goes into lugar field
     var fRep = document.getElementById('ped-fecha-rep').value;
     var hi   = document.getElementById('ped-hora-inicio').value;
     var hf   = document.getElementById('ped-hora-fin').value;
@@ -2559,23 +2569,39 @@ function previsualizarPedido() {
     el.textContent = 'Completa el formulario para ver la confirmación...'; return;
   }
 
-  var destinoLine = destino;
-  if (lugar && lugar !== destino) destinoLine = destino + ' (' + lugar + ')';
-
   var lines = [];
-  if (cliente)     lines.push('Cliente: '+cliente);
-  if (contacto)    lines.push('Contacto: '+contacto);
-  if (artFull)     lines.push('Artículo: '+artFull);
-  if (notas)       lines.push('Notas: '+notas);
-  if (encNombre)   lines.push('Envío: '+encNombre);
-  if (destinoLine) lines.push('Destino: '+destinoLine);
-  if (diaEntrega)  lines.push('Día de entrega: '+diaEntrega);
+  if (cliente)    lines.push('Cliente: '+cliente);
+  if (contacto)   lines.push('Contacto: '+contacto);
+  if (artFull)    lines.push('Artículo: '+artFull);
+  if (notas)      lines.push('Notas: '+notas);
+  if (encNombre)  lines.push('Envío: '+encNombre);
+  if (pedState.tipo === 'repartidor') {
+    if (destino)  lines.push('Dirección: '+destino);
+    if (lugar)    lines.push('Referencia: '+lugar);
+  } else {
+    // encomienda: destino + punto exacto in parens
+    var destinoLine = destino;
+    if (lugar && lugar !== destino) destinoLine = destino + ' (' + lugar + ')';
+    if (destinoLine) lines.push('Destino: '+destinoLine);
+  }
+  if (diaEntrega) lines.push('Día de entrega: '+diaEntrega);
   if (precio > 0 || envio > 0) {
     var ts = '$'+precio.toFixed(2);
     if (envio > 0) ts += ' + $'+envio.toFixed(2)+' (Envío) = $'+total.toFixed(2);
     lines.push('Total: '+ts);
   }
   el.textContent = lines.join('\n');
+  // Update live total bar
+  var tb = document.getElementById('ped-total-bar');
+  var tv = document.getElementById('ped-total-val');
+  if (tb && tv) {
+    if (total > 0) {
+      tb.style.display = 'flex';
+      tv.textContent = '$'+total.toFixed(2);
+    } else {
+      tb.style.display = 'none';
+    }
+  }
 }
 
 function copiarConfirmacion() {
@@ -2597,7 +2623,7 @@ function copiarConfirmacion() {
 function limpiarPedido() {
   if (!document.getElementById('ped-cliente')) return;
   ['ped-cliente','ped-contacto','ped-articulo','ped-talla','ped-color','ped-notas',
-   'ped-destino-texto','ped-dir','ped-muni','ped-fecha-rep','ped-hora-inicio','ped-hora-fin']
+   'ped-destino-texto','ped-dir','ped-ref','ped-muni','ped-fecha-rep','ped-hora-inicio','ped-hora-fin']
     .forEach(function(id){ var e=document.getElementById(id); if(e) e.value=''; });
   var pp = document.getElementById('ped-precio'); if(pp) pp.value='';
   var pe = document.getElementById('ped-envio');  if(pe) pe.value='3';
