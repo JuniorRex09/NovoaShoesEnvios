@@ -1217,31 +1217,20 @@ body.light .nav-badge { background: #3a66f0; }
           </div>
 
           <div class="card ped-top-card">
-            <div class="ped-section-title">Artículo</div>
-            <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
-              <div class="form-group" style="margin:0;grid-column:1/-1;">
-                <label class="form-label">Descripción *</label>
-                <input class="form-input ped-input" id="ped-articulo" placeholder="Ej: New Balance 530" oninput="previsualizarPedido()">
-              </div>
-              <div class="form-group" style="margin:0;">
-                <label class="form-label">Talla</label>
-                <input class="form-input ped-input" id="ped-talla" placeholder="8, XL, 38" oninput="previsualizarPedido()">
-              </div>
-              <div class="form-group" style="margin:0;">
-                <label class="form-label">Color</label>
-                <input class="form-input ped-input" id="ped-color" placeholder="Blanco, Negro" oninput="previsualizarPedido()">
-              </div>
-              <div class="form-group" style="margin:0;">
-                <label class="form-label">Precio (USD) *</label>
-                <input class="form-input ped-input" type="number" id="ped-precio" placeholder="65.00" step="0.01" min="0" oninput="previsualizarPedido()">
-              </div>
+            <div class="ped-section-title" style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">
+              <span>Artículos</span>
+              <button onclick="agregarArticuloPedido()" style="padding:4px 10px;background:rgba(79,125,255,0.15);color:var(--blue-light);border:1px solid rgba(79,125,255,0.3);border-radius:20px;font-size:11px;font-weight:600;cursor:pointer;font-family:DM Sans,sans-serif;">+ Agregar</button>
+            </div>
+            <div id="ped-articulos-lista" style="display:flex;flex-direction:column;gap:10px;"></div>
+            <div style="margin-top:12px;display:grid;grid-template-columns:1fr 1fr;gap:10px;">
               <div class="form-group" style="margin:0;">
                 <label class="form-label">Costo envío (USD)</label>
                 <input class="form-input ped-input" type="number" id="ped-envio" placeholder="3.00" step="0.25" min="0" value="3" oninput="previsualizarPedido()">
               </div>
+              <div class="form-group" style="margin:0;"></div>
               <div class="form-group" style="margin:0;grid-column:1/-1;">
                 <label class="form-label">Notas (opcional)</label>
-                <textarea class="form-input ped-input" id="ped-notas" rows="2" placeholder="Instrucciones especiales..." oninput="previsualizarPedido()" style="resize:vertical;min-height:52px;"></textarea>
+                <textarea class="form-input ped-input" id="ped-notas" rows="2" placeholder="Instrucciones especiales..." oninput="previsualizarPedido()" style="resize:vertical;min-height:48px;"></textarea>
               </div>
             </div>
           </div>
@@ -1321,6 +1310,13 @@ body.light .nav-badge { background: #3a66f0; }
           </div>
 
         </div><!-- /ped-top-row -->
+
+        <!-- Historial últimas 5 confirmaciones -->
+        <div id="ped-historial-wrap" style="margin-top:24px;display:none;">
+          <div style="font-size:12px;letter-spacing:1px;text-transform:uppercase;color:var(--text3);font-weight:700;margin-bottom:12px;">Últimas confirmaciones</div>
+          <div id="ped-historial-lista" style="display:flex;flex-direction:column;gap:10px;"></div>
+        </div>
+
       </div>
 
 
@@ -1494,8 +1490,8 @@ function navigate(view) {
   if (view === 'pedido') {
     renderStats();
     cargarEncomendistasEnPedido();
-    // Always reset form state when opening pedido view
     limpiarPedido();
+    renderHistorial();
   }
   if (view === 'encomendistas') renderEncomendistas();
   updateBadges();
@@ -2283,6 +2279,9 @@ function setTipoEnvio(tipo) {
   // Show top row
   var topRow = document.getElementById('ped-top-row');
   if (topRow) topRow.style.display = '';
+  // Init articles if empty
+  if (!pedArticulos.length) initArticulosPedido();
+  else renderArticulosPedido();
   // Show/hide blocks
   (document.getElementById('ped-block-encomienda')||{style:{}}).style.display  = tipo==='encomienda'  ? 'flex' : 'none';
   (document.getElementById('ped-block-repartidor')||{style:{}}).style.display  = tipo==='repartidor'  ? 'flex' : 'none';
@@ -2508,6 +2507,214 @@ function seleccionarFecha(el) {
 }
 
 
+// ════════════════════════════════════════
+// PEDIDO — ARTÍCULOS MÚLTIPLES
+// ════════════════════════════════════════
+
+// State: array of articles
+var pedArticulos = []; // [{desc,talla,color,precio,qty}]
+
+function initArticulosPedido() {
+  pedArticulos = [{ desc:'', talla:'', color:'', precio:'', qty:1 }];
+  renderArticulosPedido();
+}
+
+function renderArticulosPedido() {
+  var el = document.getElementById('ped-articulos-lista');
+  if (!el) return;
+  if (!pedArticulos.length) initArticulosPedido();
+  el.innerHTML = pedArticulos.map(function(a, i) {
+    var multi = pedArticulos.length > 1;
+    return '<div style="border:1px solid var(--border);border-radius:var(--radius-sm);padding:10px 12px;background:var(--bg3);">'
+      + (multi ? '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">'
+          + '<span style="font-size:11px;color:var(--text3);font-weight:600;">Artículo '+(i+1)+'</span>'
+          + '<button onclick="quitarArticulo('+i+')" style="background:none;border:none;color:var(--red);cursor:pointer;font-size:14px;padding:0 2px;" title="Quitar">✕</button>'
+          + '</div>' : '')
+      + '<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">'
+      +   '<div class="form-group" style="margin:0;grid-column:1/-1;">'
+      +     '<label class="form-label" style="font-size:11px;">Descripción *</label>'
+      +     '<input class="form-input ped-input" style="font-size:13px;padding:8px 11px;" value="'+esc(a.desc)+'" placeholder="Ej: New Balance 530" oninput="pedArticulos['+i+'].desc=this.value;previsualizarPedido()">'
+      +   '</div>'
+      +   '<div class="form-group" style="margin:0;">'
+      +     '<label class="form-label" style="font-size:11px;">Talla</label>'
+      +     '<input class="form-input ped-input" style="font-size:13px;padding:8px 11px;" value="'+esc(a.talla)+'" placeholder="8, XL" oninput="pedArticulos['+i+'].talla=this.value;previsualizarPedido()">'
+      +   '</div>'
+      +   '<div class="form-group" style="margin:0;">'
+      +     '<label class="form-label" style="font-size:11px;">Color</label>'
+      +     '<input class="form-input ped-input" style="font-size:13px;padding:8px 11px;" value="'+esc(a.color)+'" placeholder="Blanco" oninput="pedArticulos['+i+'].color=this.value;previsualizarPedido()">'
+      +   '</div>'
+      +   '<div class="form-group" style="margin:0;">'
+      +     '<label class="form-label" style="font-size:11px;">Precio (USD)</label>'
+      +     '<input class="form-input ped-input" type="number" style="font-size:13px;padding:8px 11px;" value="'+esc(a.precio+'')+'" placeholder="65.00" step="0.01" min="0" oninput="pedArticulos['+i+'].precio=parseFloat(this.value)||0;previsualizarPedido()">'
+      +   '</div>'
+      +   '<div class="form-group" style="margin:0;">'
+      +     '<label class="form-label" style="font-size:11px;">Cantidad</label>'
+      +     '<div style="display:flex;align-items:center;gap:6px;">'
+      +       '<button onclick="cambiarQty('+i+',-1)" style="width:30px;height:30px;border-radius:6px;border:1px solid var(--border2);background:var(--bg4);color:var(--text);cursor:pointer;font-size:16px;line-height:1;">−</button>'
+      +       '<span style="min-width:24px;text-align:center;font-weight:600;font-size:14px;color:var(--text);">'+a.qty+'</span>'
+      +       '<button onclick="cambiarQty('+i+',1)" style="width:30px;height:30px;border-radius:6px;border:1px solid var(--border2);background:var(--bg4);color:var(--text);cursor:pointer;font-size:16px;line-height:1;">+</button>'
+      +     '</div>'
+      +   '</div>'
+      + '</div>'
+      + '</div>';
+  }).join('');
+}
+
+function agregarArticuloPedido() {
+  pedArticulos.push({ desc:'', talla:'', color:'', precio:0, qty:1 });
+  renderArticulosPedido();
+}
+
+function quitarArticulo(i) {
+  if (pedArticulos.length <= 1) return;
+  pedArticulos.splice(i, 1);
+  renderArticulosPedido();
+  previsualizarPedido();
+}
+
+function cambiarQty(i, delta) {
+  pedArticulos[i].qty = Math.max(1, (pedArticulos[i].qty||1) + delta);
+  renderArticulosPedido();
+  previsualizarPedido();
+}
+
+function buildArticulosText() {
+  return pedArticulos.filter(function(a){ return a.desc; }).map(function(a) {
+    var parts = [a.desc];
+    if (a.talla) parts.push('Talla '+a.talla);
+    if (a.color) parts.push('Color '+a.color);
+    var line = parts.join(' - ');
+    if (a.qty > 1) line = a.qty+'x ' + line;
+    return line;
+  }).join('\n         ');
+}
+
+function buildPrecioTotal(envio) {
+  var subtotal = pedArticulos.reduce(function(sum, a){ return sum + ((parseFloat(a.precio)||0) * (a.qty||1)); }, 0);
+  var total = subtotal + (parseFloat(envio)||0);
+  return { subtotal:subtotal, total:total };
+}
+
+// ════════════════════════════════════════
+// PEDIDO — HISTORIAL
+// ════════════════════════════════════════
+
+var PED_HIST_KEY = 'sv_ped_historial';
+
+function guardarEnHistorial(confirmacion, estado) {
+  var hist = JSON.parse(localStorage.getItem(PED_HIST_KEY)||'[]');
+  hist.unshift({
+    id: Date.now(),
+    texto: confirmacion,
+    estado: estado,   // snapshot of pedState + articulos + fields
+    fecha: new Date().toISOString()
+  });
+  hist = hist.slice(0, 5); // keep only last 5
+  localStorage.setItem(PED_HIST_KEY, JSON.stringify(hist));
+}
+
+function renderHistorial() {
+  var wrap = document.getElementById('ped-historial-wrap');
+  var lista = document.getElementById('ped-historial-lista');
+  if (!wrap || !lista) return;
+  var hist = JSON.parse(localStorage.getItem(PED_HIST_KEY)||'[]');
+  if (!hist.length) { wrap.style.display='none'; return; }
+  wrap.style.display = '';
+  lista.innerHTML = hist.map(function(h, i) {
+    var d = new Date(h.fecha);
+    var dateStr = d.toLocaleDateString('es-SV',{weekday:'short',day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'});
+    // First line of confirmation as title
+    var firstLine = h.texto.split('\n').find(function(l){ return l.startsWith('Cliente:'); }) || h.texto.split('\n')[0];
+    return '<div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-sm);padding:12px 14px;">'
+      + '<div style="display:flex;align-items:flex-start;justify-content:space-between;gap:10px;margin-bottom:8px;">'
+      +   '<div>'
+      +     '<div style="font-size:13px;font-weight:600;color:var(--text);">'+esc(firstLine)+'</div>'
+      +     '<div style="font-size:11px;color:var(--text3);margin-top:2px;">'+esc(dateStr)+'</div>'
+      +   '</div>'
+      +   '<div style="display:flex;gap:6px;flex-shrink:0;">'
+      +     '<button onclick="editarHistorial('+i+')" style="padding:4px 10px;background:rgba(79,125,255,0.12);color:var(--blue-light);border:1px solid rgba(79,125,255,0.25);border-radius:20px;font-size:11px;font-weight:600;cursor:pointer;font-family:DM Sans,sans-serif;">Editar</button>'
+      +     '<button onclick="copiarHistorial('+i+')" style="padding:4px 10px;background:var(--bg3);color:var(--text2);border:1px solid var(--border2);border-radius:20px;font-size:11px;font-weight:600;cursor:pointer;font-family:DM Sans,sans-serif;">Copiar</button>'
+      +   '</div>'
+      + '</div>'
+      + '<div style="font-size:12px;color:var(--text3);white-space:pre-wrap;line-height:1.6;padding:8px 10px;background:var(--bg3);border-radius:6px;">'+esc(h.texto)+'</div>'
+      + '</div>';
+  }).join('');
+}
+
+function copiarHistorial(i) {
+  var hist = JSON.parse(localStorage.getItem(PED_HIST_KEY)||'[]');
+  var h = hist[i]; if (!h) return;
+  fallbackCopy(h.texto, function(){ toast('Confirmación copiada'); });
+  if (navigator.clipboard && window.isSecureContext)
+    navigator.clipboard.writeText(h.texto).then(function(){ toast('Confirmación copiada'); }).catch(function(){ fallbackCopy(h.texto, function(){ toast('Confirmación copiada'); }); });
+}
+
+function editarHistorial(i) {
+  var hist = JSON.parse(localStorage.getItem(PED_HIST_KEY)||'[]');
+  var h = hist[i]; if (!h || !h.estado) return;
+  var s = h.estado;
+
+  // Reset first
+  limpiarPedido();
+
+  // Restore tipo
+  if (s.tipo) setTipoEnvio(s.tipo);
+
+  // Restore simple fields
+  var simple = ['cliente','contacto','envio','notas','destino-texto','dir','ref','muni'];
+  simple.forEach(function(k) {
+    var el = document.getElementById('ped-'+k);
+    if (el && s[k] !== undefined) el.value = s[k];
+  });
+
+  // Restore date/time for repartidor
+  if (s.fechaRep) { var el=document.getElementById('ped-fecha-rep'); if(el) el.value=s.fechaRep; }
+  if (s.horaInicio) { var el=document.getElementById('ped-hora-inicio'); if(el) el.value=s.horaInicio; }
+  if (s.horaFin) { var el=document.getElementById('ped-hora-fin'); if(el) el.value=s.horaFin; }
+
+  // Restore articles
+  if (s.articulos && s.articulos.length) {
+    pedArticulos = s.articulos;
+    renderArticulosPedido();
+  }
+
+  // Restore encomienda selection
+  if (s.tipo === 'encomienda' && s.destinoTxt) {
+    var dt = document.getElementById('ped-destino-texto');
+    if (dt) { dt.value = s.destinoTxt; buscarEncomendistasParaDestino(true); }
+  }
+
+  // Scroll to form
+  var tr = document.getElementById('ped-top-row');
+  if (tr) tr.scrollIntoView({ behavior:'smooth', block:'start' });
+  previsualizarPedido();
+  toast('Pedido cargado para editar');
+}
+
+
+function capturarEstadoPedido() {
+  function val(id) { var e=document.getElementById(id); return e?e.value:''; }
+  return {
+    tipo: pedState.tipo,
+    cliente:     val('ped-cliente'),
+    contacto:    val('ped-contacto'),
+    envio:       val('ped-envio'),
+    notas:       val('ped-notas'),
+    destinoTxt:  val('ped-destino-texto'),
+    dir:         val('ped-dir'),
+    ref:         val('ped-ref'),
+    muni:        val('ped-muni'),
+    fechaRep:    val('ped-fecha-rep'),
+    horaInicio:  val('ped-hora-inicio'),
+    horaFin:     val('ped-hora-fin'),
+    articulos:   pedArticulos.map(function(a){ return Object.assign({},a); }),
+    encId:       pedState.encId,
+    rutaIdx:     pedState.rutaIdx,
+    fechaSel:    pedState.fechaSeleccionada,
+    horario:     pedState.horario
+  };
+}
+
 function fallbackCopy(text, cb) {
   var ta = document.createElement('textarea');
   ta.value = text; ta.style.cssText = 'position:fixed;top:0;left:0;opacity:0;';
@@ -2520,19 +2727,12 @@ function previsualizarPedido() {
   if (!document.getElementById('ped-cliente')) return;
   var cliente  = (document.getElementById('ped-cliente').value||'').trim();
   var contacto = (document.getElementById('ped-contacto').value||'').trim();
-  var articulo = (document.getElementById('ped-articulo').value||'').trim();
-  var talla    = (document.getElementById('ped-talla').value||'').trim();
-  var color    = (document.getElementById('ped-color').value||'').trim();
-  var precio   = parseFloat(document.getElementById('ped-precio').value)||0;
   var envio    = parseFloat(document.getElementById('ped-envio').value)||0;
   var notas    = (document.getElementById('ped-notas').value||'').trim();
-  var total    = precio + envio;
-
-  // Build artículo line: "New Balance 530 - Talla 8 - Color Blanco"
-  var artParts = [articulo];
-  if (talla) artParts.push('Talla ' + talla);
-  if (color) artParts.push('Color ' + color);
-  var artFull = artParts.join(' - ');
+  // Build articles text from pedArticulos array
+  var artFull  = buildArticulosText();
+  var totals   = buildPrecioTotal(envio);
+  var total    = totals.total;
 
   var el = document.getElementById('ped-preview');
   var encNombre = '', destino = '', diaEntrega = '', lugar = '';
@@ -2585,8 +2785,9 @@ function previsualizarPedido() {
     if (destinoLine) lines.push('Destino: '+destinoLine);
   }
   if (diaEntrega) lines.push('Día de entrega: '+diaEntrega);
-  if (precio > 0 || envio > 0) {
-    var ts = '$'+precio.toFixed(2);
+  if (total > 0) {
+    var subtotal = totals.subtotal;
+    var ts = '$'+subtotal.toFixed(2);
     if (envio > 0) ts += ' + $'+envio.toFixed(2)+' (Envío) = $'+total.toFixed(2);
     lines.push('Total: '+ts);
   }
@@ -2608,6 +2809,10 @@ function copiarConfirmacion() {
   if (!document.getElementById('ped-preview')) return;
   var texto = document.getElementById('ped-preview').textContent;
   if (!texto || texto.indexOf('Completa') === 0) { toast('Completa el formulario primero','error'); return; }
+  // Save to historial before copying
+  var estado = capturarEstadoPedido();
+  guardarEnHistorial(texto, estado);
+  renderHistorial();
   function showOk() {
     toast('¡Confirmación copiada!');
     var ok = document.getElementById('ped-copy-ok');
@@ -2622,11 +2827,12 @@ function copiarConfirmacion() {
 
 function limpiarPedido() {
   if (!document.getElementById('ped-cliente')) return;
-  ['ped-cliente','ped-contacto','ped-articulo','ped-talla','ped-color','ped-notas',
+  ['ped-cliente','ped-contacto','ped-notas',
    'ped-destino-texto','ped-dir','ped-ref','ped-muni','ped-fecha-rep','ped-hora-inicio','ped-hora-fin']
     .forEach(function(id){ var e=document.getElementById(id); if(e) e.value=''; });
-  var pp = document.getElementById('ped-precio'); if(pp) pp.value='';
   var pe = document.getElementById('ped-envio');  if(pe) pe.value='3';
+  pedArticulos = [{ desc:'', talla:'', color:'', precio:0, qty:1 }];
+  renderArticulosPedido();
   var ids = ['ped-enc-wrap','ped-enc-selected-wrap','ped-fechas-wrap'];
   ids.forEach(function(id){ var e=document.getElementById(id); if(e) e.style.display='none'; });
   var fl = document.getElementById('ped-fechas-lista'); if(fl) fl.innerHTML='';
