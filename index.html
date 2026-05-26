@@ -1223,11 +1223,11 @@ body.light .nav-badge { background: #3a66f0; }
             </div>
             <div id="ped-articulos-lista" style="display:flex;flex-direction:column;gap:10px;"></div>
             <div style="margin-top:12px;display:grid;grid-template-columns:1fr 1fr;gap:10px;">
-              <div class="form-group" style="margin:0;">
-                <label class="form-label">Costo envío (USD)</label>
-                <input class="form-input ped-input" type="number" id="ped-envio" placeholder="3.00" step="0.25" min="0" value="3" oninput="previsualizarPedido()">
+              <!-- Costo envío for encomienda (shown/hidden by setTipoEnvio) -->
+              <div class="form-group" id="ped-envio-enc-wrap" style="margin:0;display:none;">
+                <label class="form-label">Costo de envío (USD)</label>
+                <input class="form-input ped-input" type="number" id="ped-envio-enc" placeholder="2.00" step="0.25" min="0" value="2" oninput="previsualizarPedido()">
               </div>
-              <div class="form-group" style="margin:0;"></div>
               <div class="form-group" style="margin:0;grid-column:1/-1;">
                 <label class="form-label">Notas (opcional)</label>
                 <textarea class="form-input ped-input" id="ped-notas" rows="2" placeholder="Instrucciones especiales..." oninput="previsualizarPedido()" style="resize:vertical;min-height:48px;"></textarea>
@@ -1276,7 +1276,11 @@ body.light .nav-badge { background: #3a66f0; }
                 <input class="form-input ped-input" id="ped-muni" list="muni-list-ped" placeholder="Selecciona municipio" oninput="previsualizarPedido()">
                 <datalist id="muni-list-ped"></datalist>
               </div>
-              <div class="form-group" style="margin:0;grid-column:1/-1;">
+              <div class="form-group" style="margin:0;">
+                <label class="form-label">Costo de envío (USD)</label>
+                <input class="form-input ped-input" type="number" id="ped-envio-rep" placeholder="5.00" step="0.25" min="0" value="5" oninput="previsualizarPedido()">
+              </div>
+              <div class="form-group" style="margin:0;">
                 <label class="form-label">Fecha</label>
                 <input class="form-input ped-input" type="date" id="ped-fecha-rep" oninput="previsualizarPedido()">
               </div>
@@ -2285,6 +2289,9 @@ function setTipoEnvio(tipo) {
   // Show/hide blocks
   (document.getElementById('ped-block-encomienda')||{style:{}}).style.display  = tipo==='encomienda'  ? 'flex' : 'none';
   (document.getElementById('ped-block-repartidor')||{style:{}}).style.display  = tipo==='repartidor'  ? 'flex' : 'none';
+  // Show envio cost in artículo card only for encomienda
+  var encWrap = document.getElementById('ped-envio-enc-wrap');
+  if (encWrap) encWrap.style.display = tipo==='encomienda' ? '' : 'none';
   // Populate municipio datalist for repartidor — AMSS only
   if (tipo === 'repartidor') {
     var dl = document.getElementById('muni-list-ped');
@@ -2660,8 +2667,14 @@ function editarHistorial(i) {
   // Restore tipo
   if (s.tipo) setTipoEnvio(s.tipo);
 
+  // Restore envio to correct field
+  if (s.envio !== undefined) {
+    var envFld = s.tipo === 'repartidor' ? 'ped-envio-rep' : 'ped-envio-enc';
+    var envEl = document.getElementById(envFld);
+    if (envEl) envEl.value = s.envio;
+  }
   // Restore simple fields
-  var simple = ['cliente','contacto','envio','notas','destino-texto','dir','ref','muni'];
+  var simple = ['cliente','contacto','notas','destino-texto','dir','ref','muni'];
   simple.forEach(function(k) {
     var el = document.getElementById('ped-'+k);
     if (el && s[k] !== undefined) el.value = s[k];
@@ -2698,7 +2711,7 @@ function capturarEstadoPedido() {
     tipo: pedState.tipo,
     cliente:     val('ped-cliente'),
     contacto:    val('ped-contacto'),
-    envio:       val('ped-envio'),
+    envio:       pedState.tipo==='repartidor' ? val('ped-envio-rep') : val('ped-envio-enc'),
     notas:       val('ped-notas'),
     destinoTxt:  val('ped-destino-texto'),
     dir:         val('ped-dir'),
@@ -2727,7 +2740,9 @@ function previsualizarPedido() {
   if (!document.getElementById('ped-cliente')) return;
   var cliente  = (document.getElementById('ped-cliente').value||'').trim();
   var contacto = (document.getElementById('ped-contacto').value||'').trim();
-  var envio    = parseFloat(document.getElementById('ped-envio').value)||0;
+  var _envioId = pedState.tipo === 'repartidor' ? 'ped-envio-rep' : 'ped-envio-enc';
+  var _envioEl = document.getElementById(_envioId);
+  var envio    = _envioEl ? (parseFloat(_envioEl.value)||0) : 0;
   var notas    = (document.getElementById('ped-notas').value||'').trim();
   // Build articles text from pedArticulos array
   var artFull  = buildArticulosText();
@@ -2771,7 +2786,14 @@ function previsualizarPedido() {
 
   var lines = [];
   if (cliente)    lines.push('Cliente: '+cliente);
-  if (contacto)   lines.push('Contacto: '+contacto);
+  // Format phone: add dash after 4 digits if missing (12345678 → 1234-5678)
+  var contactoFmt = contacto;
+  if (contacto) {
+    var digits = contacto.replace(/\D/g,'');
+    if (digits.length === 8 && contacto.indexOf('-') === -1)
+      contactoFmt = digits.slice(0,4)+'-'+digits.slice(4);
+  }
+  if (contacto)   lines.push('Contacto: '+contactoFmt);
   if (artFull)    lines.push('Artículo: '+artFull);
   if (notas)      lines.push('Notas: '+notas);
   if (encNombre)  lines.push('Envío: '+encNombre);
@@ -2830,7 +2852,8 @@ function limpiarPedido() {
   ['ped-cliente','ped-contacto','ped-notas',
    'ped-destino-texto','ped-dir','ped-ref','ped-muni','ped-fecha-rep','ped-hora-inicio','ped-hora-fin']
     .forEach(function(id){ var e=document.getElementById(id); if(e) e.value=''; });
-  var pe = document.getElementById('ped-envio');  if(pe) pe.value='3';
+  var pee = document.getElementById('ped-envio-enc'); if(pee) pee.value='2';
+  var per = document.getElementById('ped-envio-rep'); if(per) per.value='5';
   pedArticulos = [{ desc:'', talla:'', color:'', precio:0, qty:1 }];
   renderArticulosPedido();
   var ids = ['ped-enc-wrap','ped-enc-selected-wrap','ped-fechas-wrap'];
