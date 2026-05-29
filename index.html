@@ -2014,6 +2014,7 @@ function renderEncomendistas() {
           <div class="enc-phone">${esc(enc.telefono)||'Sin teléfono registrado'}</div>
         </div>
         <div class="enc-actions">
+          <button class="btn btn-secondary btn-sm" onclick="exportarCSV('${enc.id}')" title="Descargar CSV de rutas">↓ CSV</button>
           <button class="btn btn-secondary btn-sm" onclick="abrirModalEncomendista('${enc.id}')">Editar</button>
           <button class="btn btn-danger btn-sm" onclick="eliminarEncomendista('${enc.id}')">Eliminar</button>
         </div>
@@ -2292,30 +2293,52 @@ function guardarEncomendista() {
 // IMPORTAR CSV
 // ════════════════════════════════════════
 function importarCSV(file) {
+  // Expected columns: RUTA, DIA, DESTINO, MUNICIPIO, PUNTO EXACTO, HORARIO
+  // Col index:          0     1    2        3          4              5
   if (!file) return;
   Papa.parse(file, {
     header: false, skipEmptyLines: true,
-    complete: (results) => {
-      let rutas = [];
-      results.data.forEach(row => {
-        if (!row[0]) return;
-        const diasBrutos = row[2] ? row[2].split(',').map(d=>d.trim()) : [];
+    // Auto-detect delimiter: try ; first (our export format), fall back to ,
+    // PapaParse's auto-detect handles both transparently
+    delimitersToGuess: [';', ',', '\t', '|'],
+    complete: function(results) {
+      var rows = results.data;
+      // Skip header row if first cell looks like a label
+      var startRow = 0;
+      if (rows.length && rows[0][0] && rows[0][0].toUpperCase().indexOf('RUTA') !== -1) startRow = 1;
+
+      var rutas = [];
+      rows.slice(startRow).forEach(function(row) {
+        if (!row[2] && !row[0]) return; // skip empty rows
+        var dias = row[1] ? row[1].split(',').map(function(d){ return d.trim(); }).filter(Boolean) : [];
+        var lookupDepto2 = function(muni) {
+          if (!muni) return '';
+          var mn = normalize(muni);
+          var found = '';
+          Object.entries(MUNICIPIOS_POR_DEPTO).forEach(function(e) {
+            if (e[1].some(function(m){ return normalize(m) === mn; })) found = e[0];
+          });
+          return found;
+        };
+        var municipio = row[3] ? row[3].trim() : '';
         rutas.push({
-          destino: row[0].trim(),
-          lugar: ((row[1]?row[1].trim()+' - ':'') + (row[4]?row[4].trim():'')).trim().replace(/^- /,''),
-          dias: diasBrutos,
-          horario: row[3] ? row[3].trim() : '',
+          destino:      (row[2] || row[0] || '').trim(),
+          municipio:    municipio,
+          departamento: lookupDepto2(municipio),
+          lugar:        row[4] ? row[4].trim() : '',
+          dias:         dias,
+          horario:      row[5] ? row[5].trim() : '',
         });
       });
       if (!rutas.length) { toast('Archivo sin formato válido o vacío','error'); return; }
-      const nombreEnc = prompt('Nombre para el nuevo encomendista:', 'Encomendista CSV');
+      var nombreEnc = prompt('Nombre para el nuevo encomendista:', 'Encomendista CSV');
       if (!nombreEnc) return;
-      const encs = DB.get();
+      var encs = DB.get();
       encs.push({
         id: uid(), nombre: nombreEnc.trim(), telefono: '',
-        cobertura: [...new Set(rutas.map(r=>r.destino).filter(Boolean))].join(','),
-        dias: [...new Set(rutas.flatMap(r=>r.dias))],
-        tiempo: '1 día', tarifa: '2.00', rutas,
+        cobertura: [...new Set(rutas.map(function(r){ return r.destino; }).filter(Boolean))].join(','),
+        dias: [...new Set(rutas.flatMap(function(r){ return r.dias; }))],
+        tiempo: '1 día', tarifa: '2.00', rutas: rutas,
         creadoEn: new Date().toISOString()
       });
       DB.set(encs);
@@ -2323,9 +2346,65 @@ function importarCSV(file) {
       updateBadges();
       renderStats();
       renderQuickTags();
-      toast(`Importación exitosa: ${rutas.length} rutas`);
+      toast('Importación exitosa: ' + rutas.length + ' rutas');
     }
   });
+}
+
+
+function exportarCSVActual() {
+  var id = document.getElementById('enc-edit-id') ? document.getElementById('enc-edit-id').value : '';
+  if (id) { exportarCSV(id); return; }
+  // No editor open — show select
+  var encs = DB.get();
+  if (!encs.length) { toast('Sin empresas para exportar','error'); return; }
+  if (encs.length === 1) { exportarCSV(encs[0].id); return; }
+  var opts = encs.map(function(e,i){ return (i+1)+'. '+e.nombre; }).join('\n');
+  var idx = prompt('¿Cuál empresa exportar?\n'+opts+'\n\nEscribe el número:');
+  if (!idx) return;
+  var enc = encs[parseInt(idx)-1];
+  if (enc) exportarCSV(enc.id);
+}
+
+function exportarCSV(encId) {
+  var enc = DB.get().find(function(e){ return e.id === encId; });
+  if (!enc || !enc.rutas) { toast('Sin rutas para exportar', 'error'); return; }
+  // Use ; as separator (works universally in Excel/Sheets regardless of locale)
+  // UTF-8 BOM (\uFEFF) ensures tildes and special chars display correctly in Excel
+  var SEP = ';';
+  function csvCell(v) {
+    var s = String(v == null ? '' : v);
+    // Always quote cells that contain the separator, quotes or newlines
+    if (s.indexOf(SEP) !== -1 || s.indexOf('"') !== -1 || s.indexOf('\n') !== -1 || s.indexOf('\r') !== -1)
+      return '"' + s.replace(/"/g, '""') + '"';
+    return s;
+  }
+  var headers = ['RUTA','DIA','DESTINO','MUNICIPIO','PUNTO EXACTO','HORARIO'];
+  var csvRows = [headers.map(csvCell).join(SEP)];
+  enc.rutas.forEach(function(r, i) {
+    var hor = r.horario || '';
+    if (r.horaInicio && r.horaFin) hor = formatHora(r.horaInicio) + ' - ' + formatHora(r.horaFin);
+    csvRows.push([
+      i + 1,
+      (r.dias || []).join(' / '),
+      r.destino   || '',
+      r.municipio || '',
+      r.lugar     || '',
+      hor
+    ].map(csvCell).join(SEP));
+  });
+  // \uFEFF = UTF-8 BOM — makes Excel open the file with correct encoding for tildes
+  var csvContent = '\uFEFF' + csvRows.join('\r\n');
+  var blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+  var url = URL.createObjectURL(blob);
+  var a = document.createElement('a');
+  a.href = url;
+  a.download = enc.nombre.replace(/[^a-z0-9áéíóúüñÁÉÍÓÚÜÑ]/gi, '_') + '_rutas.csv';
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+  toast('CSV descargado: ' + enc.rutas.length + ' rutas');
 }
 
 // ════════════════════════════════════════
@@ -2810,7 +2889,8 @@ function cambiarQty(i, delta) {
   previsualizarPedido();
 }
 
-function buildArticulosText() {
+function buildArticulosLines() {
+  // Returns array of strings, one per article
   return pedArticulos.filter(function(a){ return a.desc; }).map(function(a) {
     var parts = [a.desc];
     if (a.talla) parts.push('Talla '+a.talla);
@@ -2818,7 +2898,11 @@ function buildArticulosText() {
     var line = parts.join(' - ');
     if (a.qty > 1) line = a.qty+'x ' + line;
     return line;
-  }).join('\n         ');
+  });
+}
+function buildArticulosText() {
+  // Legacy: single string (used for totals etc)
+  return buildArticulosLines().join(', ');
 }
 
 function buildPrecioTotal(envio) {
@@ -2975,7 +3059,8 @@ function previsualizarPedido() {
   var envio    = _envioEl ? (parseFloat(_envioEl.value)||0) : 0;
   var notas    = (document.getElementById('ped-notas').value||'').trim();
   // Build articles text from pedArticulos array
-  var artFull  = buildArticulosText();
+  var artLines = buildArticulosLines();
+  var artFull  = artLines.join(', '); // for total calc
   var totals   = buildPrecioTotal(envio);
   var total    = totals.total;
 
@@ -3024,7 +3109,7 @@ function previsualizarPedido() {
       contactoFmt = digits.slice(0,4)+'-'+digits.slice(4);
   }
   if (contacto)   lines.push('Contacto: '+contactoFmt);
-  if (artFull)    lines.push('Artículo: '+artFull);
+  artLines.forEach(function(al){ if(al) lines.push('Artículo: '+al); });
   if (notas)      lines.push('Notas: '+notas);
   if (encNombre)  lines.push('Envío: '+encNombre);
   if (pedState.tipo === 'repartidor') {
@@ -3436,11 +3521,34 @@ function editarDashPedido(id) {
       var er = document.getElementById('ped-envio-rep'); if(er && envioVal) er.value = envioVal;
     }
 
-    // Encomienda: restore destino and trigger search
+    // Encomienda: restore destino, trigger search, then restore fecha selection
     if (p.tipo === 'encomienda') {
       var dest = getVal('Destino:').replace(/\s*\([^)]*\)$/,'').trim();
       var dt = document.getElementById('ped-destino-texto');
-      if (dt && dest) { dt.value = dest; buscarEncomendistasParaDestino(true); }
+      // Save the fechaEntrega so we can restore it after auto-select resets it
+      var savedFechaEntrega = p.fechaEntrega || '';
+      if (dt && dest) {
+        dt.value = dest;
+        buscarEncomendistasParaDestino(true);
+        // Restore the fecha after auto-select (which calls mostrarFechasDisponibles)
+        if (savedFechaEntrega) {
+          // Extract the date part (before comma/hour)
+          var fechaLabel = savedFechaEntrega.split(',')[0].trim();
+          pedState.fechaSeleccionada = savedFechaEntrega;
+          // Highlight the matching chip if visible
+          setTimeout(function() {
+            document.querySelectorAll('.fecha-chip').forEach(function(c) {
+              if (c.textContent.trim() === fechaLabel) {
+                c.style.background  = 'rgba(79,125,255,0.15)';
+                c.style.borderColor = 'var(--accent)';
+                c.style.color       = 'var(--blue-light)';
+                c.style.fontWeight  = '600';
+              }
+            });
+            previsualizarPedido();
+          }, 300);
+        }
+      }
     }
 
     // Repartidor: restore dir, ref, muni, fecha, horas
