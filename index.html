@@ -1314,7 +1314,7 @@ body.light .nav-badge { background: #3a66f0; }
                 <div id="ped-enc-lista" style="display:flex;flex-direction:column;gap:6px;"></div>
               </div>
               <div id="ped-enc-selected-wrap" style="display:none;flex-direction:column;gap:6px;">
-                <label class="form-label">Empresa seleccionada</label>
+                <label class="form-label">Empresa de paquetería seleccionada</label>
                 <div id="ped-enc-selected-card"></div>
                 <button onclick="cambiarEncomienda()" style="padding:5px 12px;background:transparent;color:var(--text3);border:1px solid var(--border2);border-radius:var(--radius-sm);font-size:11px;cursor:pointer;font-family:DM Sans,sans-serif;align-self:flex-start;">↩ Cambiar</button>
               </div>
@@ -1397,7 +1397,7 @@ body.light .nav-badge { background: #3a66f0; }
       <!-- ═══ ENCOMENDISTAS ═══ -->
       <div id="view-encomendistas" class="view">
         <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;flex-wrap:wrap;gap:10px;">
-          <div class="section-title" style="margin:0;">Directorio de Empresas de Envío</div>
+          <div class="section-title" style="margin:0;">Directorio de Empresas de Paquetería</div>
           <div style="display:flex;gap:8px;flex-wrap:wrap;">
             <label class="import-label" title="Importar rutas por CSV">
               <input type="file" accept=".csv" style="display:none;" onchange="importarCSV(this.files[0]);this.value='';">
@@ -2367,31 +2367,16 @@ function nextDayOfWeek(from, dayNum) {
 }
 
 function getDaysUntilBodega(pedido) {
-  var today = new Date(); today.setHours(0,0,0,0);
-  var bodega = pedido.bodegaFecha ? new Date(pedido.bodegaFecha) : computeBodegaFecha(pedido);
-  return Math.round((bodega - today) / (1000*60*60*24));
+  var now = new Date();
+  var today = new Date(now); today.setHours(0,0,0,0);
+  var prepDate = pedido.bodegaFecha ? new Date(pedido.bodegaFecha) : computeBodegaFecha(pedido);
+  prepDate.setHours(0,0,0,0);
+  var days = Math.round((prepDate - today) / (1000*60*60*24));
+  // If prep day is today but already past 7pm, treat as -1 (missed)
+  if (days === 0 && now.getHours() >= 19) return -1;
+  return days;
 }
 
-function getColorClass(pedido) {
-  if (pedido.estado === 'entregado') return { bg:'rgba(45,212,160,0.1)', border:'rgba(45,212,160,0.3)', dot:'#2dd4a0', label:'Entregado' };
-  if (pedido.estado === 'enviado')   return { bg:'rgba(79,125,255,0.1)',  border:'rgba(79,125,255,0.3)',  dot:'var(--accent)', label:'Enviado — en camino' };
-  if (pedido.estado === 'bodega')    return { bg:'rgba(6,182,212,0.08)',  border:'rgba(6,182,212,0.3)',   dot:'#22d3ee', label:'En bodega ✓' };
-
-  var days = getDaysUntilBodega(pedido);
-  // Get batch day label (Sábado or Miércoles)
-  var batchDate = computeBodegaFecha(pedido);
-  var batchDay = batchDate.getDay();
-  var batchName = batchDay === 6 ? 'Sábado' : batchDay === 3 ? 'Miércoles' : ['Dom','Lun','Mar','Mié','Jue','Vie','Sáb'][batchDay];
-  var batchLabel = pedido.tipo === 'repartidor'
-    ? 'Enviar en ' + days + 'd (rep.)'
-    : 'Llevar a empresa el ' + batchName;
-
-  if (days < 0)   return { bg:'rgba(240,82,82,0.1)',   border:'rgba(240,82,82,0.4)',   dot:'#f05252', label:'⚠ Atrasado — ' + batchName + ' pasó' };
-  if (days === 0) return { bg:'rgba(249,115,22,0.1)',  border:'rgba(249,115,22,0.4)',  dot:'#f97316', label:'🔴 Llevar HOY a empresa' };
-  if (days === 1) return { bg:'rgba(245,166,35,0.12)', border:'rgba(245,166,35,0.4)',  dot:'#f5a623', label:'🟡 Mañana a empresa (' + batchName + ')' };
-  if (days <= 3)  return { bg:'rgba(245,166,35,0.06)', border:'rgba(245,166,35,0.25)', dot:'#f5a623', label:batchLabel };
-  return { bg:'rgba(79,125,255,0.04)', border:'var(--border)', dot:'var(--text3)', label:batchLabel };
-}
 
 
 function updateDashBadge() {
@@ -2655,66 +2640,43 @@ function cambiarEncomienda() {
 }
 
 function isFechaViable(deliveryLabel, horario) {
-  // Check if we can still send the package to the empresa in time.
-  // Returns: { ok: bool, warning: string|null, suggestedLabel: string|null }
+  // Returns: { ok: bool, warning: string|null }
+  // Only shows warnings/errors when the prep deadline is TODAY or already passed.
+  // Dates with prep deadline >= 2 days away show no warning (everything is fine).
   var now = new Date();
   var today = new Date(now); today.setHours(0,0,0,0);
 
-  // Parse delivery date
-  var months2 = {enero:0,febrero:1,marzo:2,abril:3,mayo:4,junio:5,
-                 julio:6,agosto:7,septiembre:8,octubre:9,noviembre:10,diciembre:11};
-  var m = deliveryLabel.match(/(\d+)\s+de\s+([a-záéíóú]+)/i);
-  if (!m) return {ok:true, warning:null, suggestedLabel:null};
-  var delivDay = parseInt(m[1]);
-  var delivMon = months2[m[2].toLowerCase()];
-  if (delivMon === undefined) return {ok:true, warning:null, suggestedLabel:null};
-
-  var year = today.getFullYear();
-  var delivDate = new Date(year, delivMon, delivDay, 0,0,0);
-  if (delivDate < today) delivDate.setFullYear(year+1);
-
-  // Build a fake pedido to compute batch day
+  // Compute this date's prep day via a fake pedido
   var fakePedido = {
     tipo: 'encomienda',
     fechaEntrega: deliveryLabel + (horario ? ', '+horario : '')
   };
-  var batchDate = computeBodegaFecha(fakePedido);
-  batchDate.setHours(0,0,0,0);
+  var prepDate = computeBodegaFecha(fakePedido); // Viernes or Martes
+  prepDate.setHours(0,0,0,0);
 
-  var batchDay = batchDate.getDay();
-  var batchDayName = ['Domingo','Lunes','Martes','Miércoles','Jueves','Viernes','Sábado'][batchDay];
-  var daysUntilBatch = Math.round((batchDate - today)/(1000*60*60*24));
+  var daysUntilPrep = Math.round((prepDate - today) / (1000*60*60*24));
+  var CUTOFF = 19; // 7:00pm
 
-  // Check if batch day is past or today but already late
-  // "Miércoles mañana" cutoff — if it's Wed past ~10am, batch is missed
-  var BATCH_CUTOFF_HOUR = 9; // 9am = must arrive by this time
-  if (daysUntilBatch < 0) {
-    return {
-      ok: false,
-      warning: 'No es posible: debió llevarse a la empresa el '+batchDayName+' y esa fecha ya pasó.',
-      suggestedLabel: null
-    };
+  // Already past the deadline
+  if (daysUntilPrep < 0) {
+    return { ok:false, warning:'Plazo para reportar a bodega ya pasó. Elige la siguiente fecha.' };
   }
-  if (daysUntilBatch === 0) {
-    // Today is batch day — check if still time
-    if (now.getHours() >= BATCH_CUTOFF_HOUR) {
-      return {
-        ok: false,
-        warning: 'Hoy era el día de llevar a la empresa ('+batchDayName+'), pero ya pasó la hora de recepción ('+BATCH_CUTOFF_HOUR+'am). Esta fecha ya no es viable.',
-        suggestedLabel: null
-      };
-    } else {
-      return {
-        ok: true,
-        warning: '⚠ Debes llevar el paquete a la empresa HOY ('+batchDayName+') antes de las '+BATCH_CUTOFF_HOUR+'am.',
-        suggestedLabel: null
-      };
-    }
+  // Today IS the prep day — check if past 7pm
+  if (daysUntilPrep === 0 && now.getHours() >= CUTOFF) {
+    return { ok:false, warning:'Ya son más de las 7:00pm — este plazo venció hoy.' };
   }
-  if (daysUntilBatch === 1) {
-    return {ok:true, warning:'📦 Mañana debes llevar a la empresa ('+batchDayName+').', suggestedLabel:null};
+  // Today IS the prep day — still before 7pm
+  if (daysUntilPrep === 0) {
+    var dayNames7 = ['Domingo','Lunes','Martes','Miércoles','Jueves','Viernes','Sábado'];
+    return { ok:true, warning:'⚠ Hoy (' + dayNames7[prepDate.getDay()] + ') es el último día — reportar a bodega antes de las 7:00pm.' };
   }
-  return {ok:true, warning:null, suggestedLabel:null};
+  // Tomorrow is the prep day
+  if (daysUntilPrep === 1) {
+    var dayNames8 = ['Domingo','Lunes','Martes','Miércoles','Jueves','Viernes','Sábado'];
+    return { ok:true, warning:'📦 Mañana (' + dayNames8[prepDate.getDay()] + ') es el límite — reportar a bodega antes de las 7:00pm.' };
+  }
+  // 2+ days away — no warning needed
+  return { ok:true, warning:null };
 }
 
 function mostrarFechasDisponibles(enc, rutaIdx) {
@@ -2731,7 +2693,7 @@ function mostrarFechasDisponibles(enc, rutaIdx) {
   var months   = ['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
   var today = new Date();
   var dates = [];
-  for (var off = 1; off <= 56 && dates.length < 8; off++) {
+  for (var off = 1; off <= 14; off++) {  // 2 weeks max
     var d = new Date(today); d.setDate(today.getDate()+off);
     if (ruta.dias.indexOf(dayNames[d.getDay()]) !== -1) {
       var label = dayNames[d.getDay()]+' '+d.getDate()+' de '+months[d.getMonth()];
@@ -3198,46 +3160,30 @@ var _editingDashId = null; // set when editing an existing dashboard pedido
 // Rule: deliver Mon/Tue for Wed routes, Thu/Fri for Sat/Sun routes
 // Repartidor: send to bodega within 3 days
 function computeBodegaFecha(pedido) {
-  // Returns the Date by which the package must be at bodega.
+  // Returns the PREP day deadline (Viernes or Martes, 7pm) for this pedido.
   //
-  // REPARTIDOR: max 3 days from today.
+  // REPARTIDOR: prep day = delivery_date - 3 days (min 1 day before).
   //
-  // ENCOMIENDA — two batches:
-  //   Batch SÁBADO mañana (envío a empresa el sábado):
-  //     Covers deliveries: Sábado tarde, Domingo, Lunes, Martes, Miércoles mañana
-  //     Delivery days: Sáb(tarde)=6, Dom=0, Lun=1, Mar=2, Mié(mañana)=3
+  // ENCOMIENDA — two weekly batches:
+  //   SAT batch  → paquetería goes out Saturday → prep day = Viernes (day before)
+  //   WED batch  → paquetería goes out Wednesday → prep day = Martes (day before)
   //
-  //   Batch MIÉRCOLES mañana (envío a empresa el miércoles):
-  //     Covers deliveries: Miércoles tarde, Jueves, Viernes, Sábado mañana
-  //     Delivery days: Mié(tarde)=3, Jue=4, Vie=5, Sáb(mañana)=6
-  //
-  //   Because Miércoles and Sábado appear in both batches (depending on time),
-  //   we use the horario hint: if delivery says "tarde/pm" on Wed → Mié batch.
-  //   Otherwise default: Mié morning = Sáb batch, Sáb afternoon = Sáb batch.
-  //
-  //   We find the NEXT occurrence of the batch day after today and return it.
-  //   If the batch day is today or in the past, we use today (send now).
+  // Rule: find the actual delivery date, then find the prep day of THE SAME WEEK
+  // (the Viernes/Martes immediately before that delivery). That is the correct deadline.
+  // Do NOT use an earlier batch from a previous week.
 
-  var today = new Date();
-  today.setHours(0,0,0,0);
+  var today = new Date(); today.setHours(0,0,0,0);
 
   if (pedido.tipo === 'repartidor') {
-    // Ideal: 3 days before delivery. Min: 1 day before.
     var daysToDeliver = parseFechaEntrega(pedido.fechaEntrega);
     if (daysToDeliver !== null && daysToDeliver > 0) {
-      // bodega = delivery_date - 3 days (or delivery_date - 1 if less than 3 days away)
       var ideal = Math.max(1, daysToDeliver - 3);
-      var d = new Date(today);
-      d.setDate(d.getDate() + ideal);
-      return d;
+      var d = new Date(today); d.setDate(d.getDate() + ideal); return d;
     }
-    // Fallback: 1 day from now
-    var d = new Date(today);
-    d.setDate(d.getDate() + 1);
-    return d;
+    var d = new Date(today); d.setDate(d.getDate() + 1); return d;
   }
 
-  // Parse delivery day from fechaEntrega string
+  // Parse the delivery day name and determine batch
   var entregaStr = (pedido.fechaEntrega || '').toLowerCase();
   var dayMap = {domingo:0, lunes:1, martes:2, 'miércoles':3, miercoles:3,
                 jueves:4, viernes:5, 'sábado':6, sabado:6};
@@ -3247,69 +3193,47 @@ function computeBodegaFecha(pedido) {
   });
 
   if (entregaDayNum === -1) {
-    // Can't determine — default to 3 days
     var d = new Date(today); d.setDate(d.getDate() + 3); return d;
   }
 
-  // Determine which batch this delivery belongs to
-  // SAT_BATCH: deliveries Sat(pm), Sun, Mon, Tue, Wed(am) → bodega = Saturday morning
-  // WED_BATCH: deliveries Wed(pm), Thu, Fri, Sat(am)     → bodega = Wednesday morning
-  //
-  // Days in SAT_BATCH: 6(Sat), 0(Sun), 1(Mon), 2(Tue), 3(Wed am)
-  // Days in WED_BATCH: 3(Wed pm), 4(Thu), 5(Fri), 6(Sat am)
-  //
-  // For Wed(3) and Sat(6) ambiguity: check horario for am/pm hints
+  // Determine batch: SAT (prep=Viernes) or WED (prep=Martes)
   var isSatBatch;
-  if (entregaDayNum === 3) { // Miércoles — check time
-    // If horario mentions "pm" or time >= 12 → Mié batch; else Sáb batch
-    var horaMatch = entregaStr.match(/(\d+):(\d+)(am|pm)/);
-    var isPM = entregaStr.indexOf('pm') !== -1 && !(entregaStr.indexOf('am') < entregaStr.indexOf('pm'));
-    isSatBatch = !isPM; // morning Wed → Sat batch; afternoon Wed → Wed batch
-  } else if (entregaDayNum === 6) { // Sábado — check time
-    // Find the first time in the string (e.g. "9:00am" or "5:00pm")
-    var firstTimeMatch = entregaStr.match(/\d+:\d+(am|pm)/);
-    var isPM2 = firstTimeMatch ? firstTimeMatch[1] === 'pm' : (entregaStr.indexOf('pm') !== -1);
-    isSatBatch = isPM2; // Sat pm/afternoon → Sat batch; Sat morning → Wed batch
+  if (entregaDayNum === 3) { // Miércoles — am=SAT batch, pm=WED batch
+    var firstTime = entregaStr.match(/\d+:\d+(am|pm)/);
+    var isPM = firstTime ? firstTime[1]==='pm' : entregaStr.indexOf('pm')!==-1;
+    isSatBatch = !isPM;
+  } else if (entregaDayNum === 6) { // Sábado — am=WED batch, pm=SAT batch
+    var firstTime2 = entregaStr.match(/\d+:\d+(am|pm)/);
+    var isPM2 = firstTime2 ? firstTime2[1]==='pm' : entregaStr.indexOf('pm')!==-1;
+    isSatBatch = isPM2;
   } else {
-    // Sun(0), Mon(1), Tue(2) → always Sat batch
-    // Thu(4), Fri(5) → always Wed batch
     isSatBatch = (entregaDayNum === 0 || entregaDayNum === 1 || entregaDayNum === 2);
   }
 
-  // Batch day: Saturday=6, Wednesday=3
-  var batchDayNum = isSatBatch ? 6 : 3;
+  // Prep day number: Viernes=5 (SAT batch) or Martes=2 (WED batch)
+  var prepDayNum = isSatBatch ? 5 : 2;
 
-  // Find next occurrence of batchDayNum on or after today
-  var batchDate = nextDayOfWeek(today, batchDayNum);
-
-  // But we need to find the CORRECT batch before the delivery date.
-  // e.g. if delivery is next Monday, the batch is the Saturday BEFORE that Monday.
-  // Parse delivery date if available
+  // Find the actual delivery date
   var daysToDeliver = parseFechaEntrega(pedido.fechaEntrega);
-  if (daysToDeliver !== null) {
-    var deliveryDate = new Date(today);
-    deliveryDate.setDate(today.getDate() + daysToDeliver);
-
-    // Find the batch date that is <= deliveryDate and >= today
-    // Try up to 2 occurrences of batch day
-    var candidate = new Date(today);
-    for (var tries = 0; tries < 3; tries++) {
-      var diff = (batchDayNum - candidate.getDay() + 7) % 7;
-      if (diff === 0 && tries > 0) diff = 7;
-      candidate.setDate(candidate.getDate() + (diff || 7));
-      if (candidate <= deliveryDate) {
-        batchDate = new Date(candidate);
-        break;
-      }
-    }
-    // If no good candidate found (batch day is after delivery), use today
-    if (batchDate > deliveryDate) batchDate = new Date(today);
+  if (daysToDeliver === null) {
+    var d = new Date(today); d.setDate(d.getDate() + 3); return d;
   }
+  var deliveryDate = new Date(today);
+  deliveryDate.setDate(today.getDate() + daysToDeliver);
 
-  // If batch date is in the past, use today
-  if (batchDate < today) batchDate = new Date(today);
+  // Find the prep day (Viernes or Martes) that is <= deliveryDate
+  // This is the prep day of the SAME WEEK as the delivery.
+  // Walk backwards from deliveryDate until we hit prepDayNum.
+  var prepDate = new Date(deliveryDate);
+  var daysBack = (deliveryDate.getDay() - prepDayNum + 7) % 7;
+  prepDate.setDate(deliveryDate.getDate() - daysBack);
+  // If daysBack==0 the delivery IS on the prep day (rare edge case), keep it
 
-  return batchDate;
+  // Safety: if prepDate ended up before today, it means delivery is this week
+  // and the prep day already passed — use today as fallback
+  if (prepDate < today) prepDate = new Date(today);
+
+  return prepDate; // Viernes or Martes of the delivery week
 }
 
 function nextDayOfWeek(from, dayNum) {
@@ -3320,30 +3244,47 @@ function nextDayOfWeek(from, dayNum) {
 }
 
 function getDaysUntilBodega(pedido) {
-  var today = new Date(); today.setHours(0,0,0,0);
-  var bodega = pedido.bodegaFecha ? new Date(pedido.bodegaFecha) : computeBodegaFecha(pedido);
-  return Math.round((bodega - today) / (1000*60*60*24));
+  var now = new Date();
+  var today = new Date(now); today.setHours(0,0,0,0);
+  var prepDate = pedido.bodegaFecha ? new Date(pedido.bodegaFecha) : computeBodegaFecha(pedido);
+  prepDate.setHours(0,0,0,0);
+  var days = Math.round((prepDate - today) / (1000*60*60*24));
+  // If prep day is today but already past 7pm, treat as -1 (missed)
+  if (days === 0 && now.getHours() >= 19) return -1;
+  return days;
 }
 
 function getColorClass(pedido) {
-  if (pedido.estado === 'entregado') return { bg:'rgba(45,212,160,0.1)', border:'rgba(45,212,160,0.3)', dot:'#2dd4a0', label:'Entregado' };
-  if (pedido.estado === 'enviado')   return { bg:'rgba(79,125,255,0.1)',  border:'rgba(79,125,255,0.3)',  dot:'var(--accent)', label:'Enviado — en camino' };
+  if (pedido.estado === 'entregado') return { bg:'rgba(45,212,160,0.1)', border:'rgba(45,212,160,0.3)', dot:'#2dd4a0', label:'Entregado ✓' };
+  if (pedido.estado === 'enviado')   return { bg:'rgba(79,125,255,0.1)',  border:'rgba(79,125,255,0.3)',  dot:'var(--accent)', label:'Enviado a empresa de paquetería' };
   if (pedido.estado === 'bodega')    return { bg:'rgba(6,182,212,0.08)',  border:'rgba(6,182,212,0.3)',   dot:'#22d3ee', label:'En bodega ✓' };
 
   var days = getDaysUntilBodega(pedido);
-  // Get batch day label (Sábado or Miércoles)
-  var batchDate = computeBodegaFecha(pedido);
-  var batchDay = batchDate.getDay();
-  var batchName = batchDay === 6 ? 'Sábado' : batchDay === 3 ? 'Miércoles' : ['Dom','Lun','Mar','Mié','Jue','Vie','Sáb'][batchDay];
-  var batchLabel = pedido.tipo === 'repartidor'
-    ? 'Enviar en ' + days + 'd (rep.)'
-    : 'Llevar a empresa el ' + batchName;
+  var prepDate = computeBodegaFecha(pedido);  // Viernes or Martes
+  var dayNames = ['Domingo','Lunes','Martes','Miércoles','Jueves','Viernes','Sábado'];
+  var prepDayName = dayNames[prepDate.getDay()];
 
-  if (days < 0)   return { bg:'rgba(240,82,82,0.1)',   border:'rgba(240,82,82,0.4)',   dot:'#f05252', label:'⚠ Atrasado — ' + batchName + ' pasó' };
-  if (days === 0) return { bg:'rgba(249,115,22,0.1)',  border:'rgba(249,115,22,0.4)',  dot:'#f97316', label:'🔴 Llevar HOY a empresa' };
-  if (days === 1) return { bg:'rgba(245,166,35,0.12)', border:'rgba(245,166,35,0.4)',  dot:'#f5a623', label:'🟡 Mañana a empresa (' + batchName + ')' };
-  if (days <= 3)  return { bg:'rgba(245,166,35,0.06)', border:'rgba(245,166,35,0.25)', dot:'#f5a623', label:batchLabel };
-  return { bg:'rgba(79,125,255,0.04)', border:'var(--border)', dot:'var(--text3)', label:batchLabel };
+  var baseLabel = pedido.tipo === 'repartidor'
+    ? 'Reportar a bodega en ' + days + ' día' + (days !== 1 ? 's' : '')
+    : 'Reportar a bodega el ' + prepDayName + ' antes de las 7:00pm';
+
+  if (days < 0)   return {
+    bg:'rgba(240,82,82,0.1)', border:'rgba(240,82,82,0.4)', dot:'#f05252',
+    label:'⚠ Atrasado — ya no se pudo reportar a bodega a tiempo'
+  };
+  if (days === 0) return {
+    bg:'rgba(249,115,22,0.1)', border:'rgba(249,115,22,0.4)', dot:'#f97316',
+    label:'🔴 Reportar a bodega HOY antes de las 7:00pm'
+  };
+  if (days === 1) return {
+    bg:'rgba(245,166,35,0.12)', border:'rgba(245,166,35,0.4)', dot:'#f5a623',
+    label:'🟡 Reportar a bodega mañana (' + prepDayName + ') antes de las 7:00pm'
+  };
+  if (days <= 3)  return {
+    bg:'rgba(245,166,35,0.06)', border:'rgba(245,166,35,0.25)', dot:'#f5a623',
+    label: baseLabel
+  };
+  return { bg:'rgba(79,125,255,0.04)', border:'var(--border)', dot:'var(--text3)', label:baseLabel };
 }
 
 function registrarEnDashboard() {
